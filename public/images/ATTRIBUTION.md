@@ -3,11 +3,11 @@
 Dish photos are placeholders from Wikimedia Commons (free licenses; see each file page for the exact license and author).
 Replace them with K's Kitchen's own photos before going live.
 
-- `public/images/paneer-butter-masala.jpg` — [File:Paneer Butter Masala 3.jpg](https://commons.wikimedia.org/wiki/File:Paneer_Butter_Masala_3.jpg)
-- `public/images/dal-makhani.jpg` — [File:Naan served with dal makhni and baingan bhurta.JPG](https://commons.wikimedia.org/wiki/File:Naan_served_with_dal_makhni_and_baingan_bhurta.JPG)
-- `public/images/chole-bhature.jpg` — [File:Chole Bhature 4.jpg](https://commons.wikimedia.org/wiki/File:Chole_Bhature_4.jpg)
-- `public/images/veg-biryani.jpg` — [File:Vegetable Biryani IMG 001.jpg](https://commons.wikimedia.org/wiki/File:Vegetable_Biryani_IMG_001.jpg)
-- `public/images/palak-paneer.jpg` — [File:Palak Paneer (Cottage cheese in spinach gravy).jpg](https://commons.wikimedia.org/wiki/File:Palak_Paneer_(Cottage_cheese_in_spinach_gravy).jpg)
+- `public/images/paneer-butter-masala.jpg` — [vegecravings.com](https://vegecravings.com/wp-content/uploads/2017/04/paneer-butter-masala-recipe-step-by-step-instructions.jpg) (supplied by client)
+- `public/images/dal-makhani.jpg` — [www.cookwithmanali.com](https://www.cookwithmanali.com/wp-content/uploads/2019/04/Restaurant-Style-Dal-Makhani.jpg) (supplied by client)
+- `public/images/chole-bhature.jpg` — [blogger.googleusercontent.com](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiwCbkUB_rdI79pC8oX057tVgszt2M-9M1V6twpK0XxtEbbEoKl6k5ET37OgYGpj-Mgalg01svXWbjpDFOgAXg8ukyZjQJ1KOPFVWzyKIHBP722ywbU-sCDYye0hVzeF7DFon62suiBjA0/s2000/IMG_20210601_190018%257E2_compress9.jpg) (supplied by client)
+- `public/images/veg-biryani.jpg` — [feastwithsafiya.com](https://feastwithsafiya.com/wp-content/uploads/2021/10/Veg-Dum-Biryani.jpg) (supplied by client)
+- `public/images/palak-paneer.jpg` — [sarahsvegankitchen.com](https://sarahsvegankitchen.com/wp-content/uploads/2025/01/Palak-Tofu-7.jpg) (supplied by client)
 - `public/images/dhokla.jpg` — [File:Dhokla Home Made,Duliajan,Assam.jpg](https://commons.wikimedia.org/wiki/File:Dhokla_Home_Made,Duliajan,Assam.jpg)
 - `public/images/thepla.jpg` — [File:Thepla main.jpg](https://commons.wikimedia.org/wiki/File:Thepla_main.jpg)
 - `public/images/undhiyu.jpg` — [File:Undhiyu.jpg](https://commons.wikimedia.org/wiki/File:Undhiyu.jpg)
