@@ -4,7 +4,7 @@ Dish photos are placeholders from Wikimedia Commons (free licenses; see each fil
 Replace them with K's Kitchen's own photos before going live.
 
 - `public/images/paneer-butter-masala.jpg` — [File:Paneer Butter Masala 3.jpg](https://commons.wikimedia.org/wiki/File:Paneer_Butter_Masala_3.jpg)
-- `public/images/dal-makhani.jpg` — [File:Dal Makhani along with Naan.jpg](https://commons.wikimedia.org/wiki/File:Dal_Makhani_along_with_Naan.jpg)
+- `public/images/dal-makhani.jpg` — [File:Naan served with dal makhni and baingan bhurta.JPG](https://commons.wikimedia.org/wiki/File:Naan_served_with_dal_makhni_and_baingan_bhurta.JPG)
 - `public/images/chole-bhature.jpg` — [File:Chole Bhature 4.jpg](https://commons.wikimedia.org/wiki/File:Chole_Bhature_4.jpg)
 - `public/images/veg-biryani.jpg` — [File:Vegetable Biryani IMG 001.jpg](https://commons.wikimedia.org/wiki/File:Vegetable_Biryani_IMG_001.jpg)
 - `public/images/palak-paneer.jpg` — [File:Palak Paneer (Cottage cheese in spinach gravy).jpg](https://commons.wikimedia.org/wiki/File:Palak_Paneer_(Cottage_cheese_in_spinach_gravy).jpg)

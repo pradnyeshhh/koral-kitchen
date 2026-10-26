@@ -36,7 +36,7 @@ function OrderCard({ order: o }) {
     <article className="order-card">
       <header>
         <div>
-          <strong>#{o.id} · {c.first_name} {c.last_name}</strong>
+          <strong><span className="oid">#{o.id}</span>{c.first_name} {c.last_name}</strong>
           <div className="muted small">{new Date(o.created_at).toLocaleString('en-IN', {
             day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit',
           })}</div>

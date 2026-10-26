@@ -54,8 +54,18 @@ export default function Menu() {
   return (
     <div className="page customer">
       <header className="brand-header">
-        <div className="brand-name">K&rsquo;s Kitchen <span>by Koral</span></div>
-        <div className="brand-tag">Pure veg · Made at home in Mumbai</div>
+        <div className="brand-row">
+          <div className="brand-mono">K</div>
+          <div>
+            <div className="brand-name">K&rsquo;s Kitchen <span>by Koral</span></div>
+            <div className="brand-tag">Home-cooked in Mumbai</div>
+          </div>
+        </div>
+        <div className="hero-badges">
+          <span className="badge"><VegMark /> 100% Vegetarian</span>
+          <span className="badge">Jain friendly</span>
+          <span className="badge">Orders via WhatsApp</span>
+        </div>
       </header>
 
       <nav className="chips">

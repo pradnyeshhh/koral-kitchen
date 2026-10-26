@@ -79,6 +79,7 @@ export default function Checkout() {
 
       <main className="checkout">
         <section className="card">
+          <h2 className="card-title">Items</h2>
           {lines.length === 0 && <p className="muted">Cart is empty. <Link to="/">Back to menu</Link></p>}
           {lines.map((l) => (
             <div key={l.id} className="cart-line">
@@ -93,6 +94,7 @@ export default function Checkout() {
         </section>
 
         <form className="card" onSubmit={placeOrder}>
+          <h2 className="card-title">Your details</h2>
           <div className="row2">
             <label>First name
               <input value={form.first_name} onChange={set('first_name')} autoComplete="given-name" />
@@ -105,8 +107,9 @@ export default function Checkout() {
             <input inputMode="numeric" value={form.phone} onChange={set('phone')}
                    onBlur={onPhoneBlur} placeholder="10-digit number" autoComplete="tel" />
           </label>
-          <p className="note">All order updates happen on WhatsApp — the chef will message you to confirm.</p>
+          <p className="hint">All order updates happen on WhatsApp — the chef will message you to confirm.</p>
 
+          <h2 className="card-title">Deliver to</h2>
           <div className="seg">
             <button type="button" className={form.customer_type === 'lodha' ? 'on' : ''}
                     onClick={() => setForm((f) => ({ ...f, customer_type: 'lodha' }))}>Lodha Park resident</button>
@@ -139,6 +142,7 @@ export default function Checkout() {
             </label>
           )}
 
+          <h2 className="card-title">Kitchen notes</h2>
           <label className="check">
             <input type="checkbox" checked={form.jain} onChange={set('jain')} />
             <span><strong>Jain preparation</strong> — no onion, garlic or root vegetables</span>
