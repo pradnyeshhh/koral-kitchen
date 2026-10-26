@@ -106,13 +106,18 @@ a { color: var(--primary); }
 }
 .chips::-webkit-scrollbar { display: none; }
 .chip {
-  flex: 0 0 auto; padding: 8px 15px; border-radius: 999px;
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 13px; border-radius: 10px;
   background: var(--card); border: 1px solid var(--line);
-  font-size: 13.5px; font-weight: 600; color: #4f5a53;
+  box-shadow: var(--shadow-sm);
+  font-size: 13px; font-weight: 600; color: #4f5a53;
   transition: background .15s, color .15s, border-color .15s, transform .1s;
 }
 .chip:active { transform: scale(.96); }
-.chip.on { background: var(--primary); color: #f2f8f4; border-color: var(--primary); box-shadow: 0 4px 12px -4px rgba(21, 111, 61, .4); }
+.chip.on {
+  background: var(--saffron-soft); color: var(--primary); border-color: var(--primary);
+}
+.chip.on svg { font-size: 12px; }
 
 /* ---------- menu ---------- */
 .menu-list { padding: 6px 18px 120px; }

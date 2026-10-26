@@ -1,21 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { listMenu, onChange } from '../lib/store.js';
 import { CATEGORIES } from '../data/seed.js';
 import { useCart } from '../lib/cart.jsx';
 import VegMark from '../components/VegMark.jsx';
 import DishModal from '../components/DishModal.jsx';
-import { FaInstagram } from 'react-icons/fa6';
+import { FaInstagram, FaXmark } from 'react-icons/fa6';
 import Qty from '../components/Qty.jsx';
 
 export default function Menu() {
   const [menu, setMenu] = useState(() => listMenu({ availableOnly: true }));
-  const [active, setActive] = useState(CATEGORIES[0]);
+  const [filter, setFilter] = useState(null);
   const [detail, setDetail] = useState(null);
   const cart = useCart();
   const navigate = useNavigate();
-  const sectionRefs = useRef({});
-  const scrollingTo = useRef(null);
 
   useEffect(() => onChange(() => setMenu(listMenu({ availableOnly: true }))), []);
 
@@ -31,28 +29,6 @@ export default function Menu() {
     menu.forEach((m) => { t += (cart.items[m.id] || 0) * m.price; });
     return t;
   }, [menu, cart.items]);
-
-  // Highlight the chip for the section in view.
-  useEffect(() => {
-    const onScroll = () => {
-      if (scrollingTo.current) return;
-      let current = CATEGORIES[0];
-      for (const c of CATEGORIES) {
-        const el = sectionRefs.current[c];
-        if (el && el.getBoundingClientRect().top < 140) current = c;
-      }
-      setActive(current);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const jumpTo = (c) => {
-    setActive(c);
-    scrollingTo.current = c;
-    sectionRefs.current[c]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setTimeout(() => { scrollingTo.current = null; }, 700);
-  };
 
   return (
     <div className="page customer">
@@ -74,17 +50,18 @@ export default function Menu() {
       <nav className="chips">
         {CATEGORIES.map((c) => (
           byCategory[c]?.length ? (
-            <button key={c} className={`chip ${active === c ? 'on' : ''}`} onClick={() => jumpTo(c)}>
-              {c}
+            <button key={c} className={`chip ${filter === c ? 'on' : ''}`}
+                    onClick={() => setFilter(filter === c ? null : c)}>
+              {c}{filter === c && <FaXmark />}
             </button>
           ) : null
         ))}
       </nav>
 
       <main className="menu-list">
-        {CATEGORIES.map((c) => (
+        {CATEGORIES.filter((c) => !filter || filter === c).map((c) => (
           byCategory[c]?.length ? (
-            <section key={c} ref={(el) => { sectionRefs.current[c] = el; }} className="menu-section">
+            <section key={c} className="menu-section">
               <h2>{c}</h2>
               {byCategory[c].map((m) => (
                 <article key={m.id} className="dish-card"
