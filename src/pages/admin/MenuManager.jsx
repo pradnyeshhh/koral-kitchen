@@ -2,14 +2,24 @@ import { useEffect, useState } from 'react';
 import { listMenu, createMenuItem, updateMenuItem, deleteMenuItem, onChange } from '../../lib/store.js';
 import { CATEGORIES } from '../../data/seed.js';
 import ImageDrop from '../../components/ImageDrop.jsx';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 
 const EMPTY = { name: '', description: '', price: '', photo: '', category: CATEGORIES[0], available: true };
 
 export default function MenuManager() {
   const [menu, setMenu] = useState(listMenu);
   const [editing, setEditing] = useState(null); // null | 'new' | item id
+  const [q, setQ] = useState('');
 
   useEffect(() => onChange(() => setMenu(listMenu())), []);
+
+  const needle = q.trim().toLowerCase();
+  const shown = needle
+    ? menu.filter((m) =>
+        m.name.toLowerCase().includes(needle)
+        || (m.category || '').toLowerCase().includes(needle)
+        || (m.description || '').toLowerCase().includes(needle))
+    : menu;
 
   const save = (form) => {
     if (editing === 'new') createMenuItem(form);
@@ -24,14 +34,23 @@ export default function MenuManager() {
   return (
     <div className="orders-page">
       <div className="page-head">
-        <h1>Menu <span className="muted">· {menu.length} items</span></h1>
+        <h1>Menu <span className="muted">· {shown.length} item{shown.length === 1 ? '' : 's'}</span></h1>
         <button className="primary" onClick={() => setEditing('new')}>+ Add item</button>
+      </div>
+
+      <div className="orders-tools">
+        <div className="search-box">
+          <FaMagnifyingGlass />
+          <input value={q} onChange={(e) => setQ(e.target.value)}
+                 placeholder="Search dishes or categories" />
+        </div>
       </div>
 
       {editing === 'new' && <ItemForm initial={EMPTY} onSave={save} onCancel={() => setEditing(null)} />}
 
+      {shown.length === 0 && <p className="muted empty">No dishes match.</p>}
       <div className="mi-list">
-        {menu.map((m) => (
+        {shown.map((m) => (
           editing === m.id
             ? <ItemForm key={m.id} initial={m} onSave={save} onCancel={() => setEditing(null)} />
             : (
