@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { listMenu, onChange, getSettings } from '../lib/store.js';
 import { CATEGORIES } from '../data/seed.js';
@@ -14,7 +14,17 @@ export default function Menu() {
   const [filter, setFilter] = useState(null);
   const [q, setQ] = useState('');
   const [detail, setDetail] = useState(null);
+  const [toast, setToast] = useState('');
+  const toastTimer = useRef(null);
   const cart = useCart();
+
+  const showToast = (msg) => {
+    clearTimeout(toastTimer.current);
+    setToast(msg);
+    toastTimer.current = setTimeout(() => setToast(''), 2600);
+  };
+  const closed = !settings.kitchen_open;
+  const blockedToast = () => showToast('We\u2019re closed right now. Ordering reopens soon.');
   const navigate = useNavigate();
 
   useEffect(() => onChange(() => { setMenu(listMenu({ availableOnly: true })); setSettings(getSettings()); }), []);
@@ -49,10 +59,13 @@ export default function Menu() {
             <div className="brand-tag">Home-cooked in Mumbai</div>
           </div>
         </div>
-        <div className="hero-badges">
-          <span className="badge"><VegMark /> 100% Vegetarian</span>
-          <span className="badge">Jain friendly</span>
-          <span className="badge">Orders via WhatsApp</span>
+        <div className="hero-status">
+          <span className={`status-dot ${closed ? '' : 'live'}`} />
+          <span>{closed ? 'Closed right now' : 'Open now'}</span>
+          <span className="dot-sep">·</span>
+          <span>Pure veg kitchen</span>
+          <span className="dot-sep">·</span>
+          <span>Delivery &amp; self pickup</span>
         </div>
       </header>
 
@@ -113,7 +126,11 @@ export default function Menu() {
                           <Qty value={cart.items[m.id]} onChange={(q) => cart.setQty(m.id, q)} />
                         </span>
                       : <button className="add-btn"
-                                onClick={(e) => { e.stopPropagation(); cart.add(m.id); }}>ADD</button>}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (closed) { blockedToast(); return; }
+                                  cart.add(m.id);
+                                }}>ADD</button>}
                   </div>
                 </article>
               ))}
@@ -128,7 +145,10 @@ export default function Menu() {
         </footer>
       </main>
 
-      {detail && <DishModal item={detail} onClose={() => setDetail(null)} />}
+      {detail && <DishModal item={detail} onClose={() => setDetail(null)}
+                            closed={closed} onBlocked={blockedToast} />}
+
+      {toast && <div className="toast">{toast}</div>}
 
       {cart.count > 0 && (
         <button className="cart-bar" onClick={() => navigate('/demo/checkout')}>

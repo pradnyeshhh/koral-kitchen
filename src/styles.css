@@ -83,16 +83,13 @@ a { color: var(--primary); }
 }
 .brand-name span { font-size: 15px; font-weight: 500; letter-spacing: 0; opacity: .78; margin-left: 3px; }
 .brand-tag { font-size: 13px; opacity: .78; margin-top: 2px; }
-.hero-badges { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
-.badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 11.5px; font-weight: 600; letter-spacing: .2px;
-  padding: 5px 11px; border-radius: 999px;
-  background: rgba(255, 255, 255, .1);
-  border: 1px solid rgba(255, 255, 255, .2);
+.hero-status {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 7px;
+  margin-top: 15px; font-size: 13px; font-weight: 550; opacity: .95;
 }
-.badge .veg-mark { width: 12px; height: 12px; border-width: 1.3px; border-color: #cfe8d8; background: transparent; }
-.badge .veg-mark span { width: 5.5px; height: 5.5px; background: #a9e2c2; }
+.status-dot { width: 9px; height: 9px; border-radius: 50%; background: #93a098; flex: 0 0 auto; }
+.status-dot.live { background: #54e194; box-shadow: 0 0 0 4px rgba(84, 225, 148, .2); }
+.dot-sep { opacity: .45; }
 
 /* ---------- chips ---------- */
 .chips {
@@ -457,7 +454,7 @@ a { color: var(--primary); }
     display: flex; justify-content: space-between; align-items: center; gap: 24px;
     padding: 30px 36px;
   }
-  .hero-badges { margin-top: 0; justify-content: flex-end; }
+  .hero-status { margin-top: 0; justify-content: flex-end; }
 
   .chips { padding: 14px 2px 12px; justify-content: center; }
 
@@ -667,3 +664,20 @@ a { color: var(--primary); }
 /* ---------- fulfilment + slot flags ---------- */
 .flag.slot { background: var(--line-soft); color: #434e47; border: 1px solid var(--line); font-weight: 600; }
 .flag.pickup { background: var(--ink); color: #fff; letter-spacing: .6px; }
+
+/* ---------- toast ---------- */
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(92px + env(safe-area-inset-bottom));
+  z-index: 90;
+  background: var(--ink); color: #f2f8f4;
+  padding: 11px 19px; border-radius: 999px;
+  font-size: 13px; font-weight: 600; text-align: center;
+  max-width: 88%;
+  box-shadow: 0 12px 32px -10px rgba(0, 0, 0, .45);
+  animation: toast-in .25s cubic-bezier(.2, 1, .4, 1);
+}
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 10px); } }
+@media (min-width: 760px) {
+  .toast { bottom: 40px; }
+}

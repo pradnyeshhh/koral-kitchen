@@ -206,9 +206,11 @@ export function createOrder({ customer, items, jain, freeFromNote, fulfilment, s
 
 export function listOrders(status) {
   const db = load();
+  // work queues run oldest-first so the chef cooks in order; history stays newest-first
+  const fifo = status === 'accepted' || status === 'ready';
   return db.orders
     .filter((o) => !status || o.status === status)
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .sort((a, b) => (fifo ? 1 : -1) * (new Date(a.created_at) - new Date(b.created_at)))
     .map((o) => hydrate(db, o));
 }
 

@@ -7,7 +7,7 @@ import { FaXmark } from 'react-icons/fa6';
 
 const QUICK_OPTIONS = ['Less spicy', 'Extra spicy', 'No onion', 'No garlic', 'Less oil', 'No coriander'];
 
-export default function DishModal({ item, onClose }) {
+export default function DishModal({ item, onClose, closed, onBlocked }) {
   const cart = useCart();
   const navigate = useNavigate();
 
@@ -69,7 +69,8 @@ export default function DishModal({ item, onClose }) {
                 </button>
               </>
             ) : (
-              <button className="primary" onClick={() => cart.add(item.id)}>
+              <button className="primary"
+                      onClick={() => { if (closed) { onBlocked?.(); return; } cart.add(item.id); }}>
                 Add to cart · ₹{item.price}
               </button>
             )}
