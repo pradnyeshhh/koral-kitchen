@@ -88,7 +88,7 @@ export default function Menu() {
               <h2>{c}</h2>
               {byCategory[c].map((m) => (
                 <article key={m.id} className="dish-card"
-                         onClick={() => { if (window.matchMedia('(min-width: 760px)').matches) setDetail(m); }}>
+                         onClick={() => setDetail(m)}>
                   <div className="dish-info">
                     <VegMark />
                     <h3>{m.name}</h3>

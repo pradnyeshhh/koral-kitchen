@@ -5,6 +5,8 @@ import Qty from './Qty.jsx';
 import { useCart } from '../lib/cart.jsx';
 import { FaXmark } from 'react-icons/fa6';
 
+const QUICK_OPTIONS = ['Less spicy', 'Extra spicy', 'No onion', 'No garlic', 'Less oil', 'No coriander'];
+
 export default function DishModal({ item, onClose }) {
   const cart = useCart();
   const navigate = useNavigate();
@@ -20,6 +22,15 @@ export default function DishModal({ item, onClose }) {
   }, [onClose]);
 
   const qty = cart.items[item.id] || 0;
+  const note = cart.notes[item.id] || '';
+  const parts = note.split(',').map((x) => x.trim()).filter(Boolean);
+  const hasOpt = (o) => parts.some((x) => x.toLowerCase() === o.toLowerCase());
+  const toggleOpt = (o) => {
+    const next = hasOpt(o)
+      ? parts.filter((x) => x.toLowerCase() !== o.toLowerCase())
+      : [...parts, o];
+    cart.setNote(item.id, next.join(', '));
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -34,11 +45,21 @@ export default function DishModal({ item, onClose }) {
           <h3>{item.name}</h3>
           <div className="modal-price">₹{item.price}</div>
           <p>{item.description}</p>
-          <label className="modal-note">Any customisation? <span className="opt">(optional)</span>
-            <input value={cart.notes[item.id] || ''}
+          <div className="modal-note">
+            <span className="field-label">Customise <span className="opt">(optional)</span></span>
+            <div className="opt-chips">
+              {QUICK_OPTIONS.map((o) => (
+                <button key={o} type="button"
+                        className={`opt-chip ${hasOpt(o) ? 'on' : ''}`}
+                        onClick={() => toggleOpt(o)}>
+                  {o}
+                </button>
+              ))}
+            </div>
+            <input value={note}
                    onChange={(e) => cart.setNote(item.id, e.target.value)}
-                   placeholder='e.g. "less spicy", "no onion"' />
-          </label>
+                   placeholder="Anything else for the chef?" />
+          </div>
           <div className="modal-foot">
             {qty > 0 ? (
               <>
