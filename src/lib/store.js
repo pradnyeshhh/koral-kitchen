@@ -60,7 +60,7 @@ function buildDemoData() {
     ['Kunal', 'Desai', '9833344556', 'other', null, null, null, '702, Sea Breeze CHS, Worli Sea Face Rd, Worli, 400018', false],
     ['Priya', 'Nair', '9820788990', 'lodha', 'Allura', 'A', '1502', null, false],
     ['Sameer', 'Kulkarni', '9821567834', 'other', null, null, null, '12, Green Acres, Dr Annie Besant Rd, Worli', false],
-    ['Divya', 'Rao', '9930456712', 'lodha', 'Marquise', 'B', '605', null, false],
+    ['Divya', 'Rao', '9930456712', 'lodha', 'Marquees', 'B', '605', null, false],
     ['Nikhil', 'Bhatt', '9867120945', 'lodha', 'Adrina', 'A', '1801', null, false],
   ].map(([first_name, last_name, phone, customer_type, tower, wing, apartment, full_address, jain_default]) => ({
     id: id++, first_name, last_name, phone, customer_type,
@@ -290,7 +290,7 @@ export function formatAddress(c) {
   return c.full_address || '';
 }
 
-export const TOWERS = ['Park Side', 'Allura', 'Marquise', 'Trump Tower', 'Kiara', 'Adrina'];
+export const TOWERS = ['Park Side', 'Allura', 'Marquees', 'Trump Tower', 'Kiara', 'Adrina'];
 export const DEFAULT_CATEGORY_OPTIONS = {
   'North Indian': ['Less spicy', 'Extra spicy', 'No onion', 'No garlic', 'Less oil', 'No coriander'],
   'Gujarati': ['Less spicy', 'Less sweet', 'No onion', 'No garlic', 'Less oil'],
