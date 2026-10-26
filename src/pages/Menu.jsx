@@ -4,11 +4,13 @@ import { listMenu, onChange } from '../lib/store.js';
 import { CATEGORIES } from '../data/seed.js';
 import { useCart } from '../lib/cart.jsx';
 import VegMark from '../components/VegMark.jsx';
+import DishModal from '../components/DishModal.jsx';
 import Qty from '../components/Qty.jsx';
 
 export default function Menu() {
   const [menu, setMenu] = useState(() => listMenu({ availableOnly: true }));
   const [active, setActive] = useState(CATEGORIES[0]);
+  const [detail, setDetail] = useState(null);
   const cart = useCart();
   const navigate = useNavigate();
   const sectionRefs = useRef({});
@@ -84,7 +86,8 @@ export default function Menu() {
             <section key={c} ref={(el) => { sectionRefs.current[c] = el; }} className="menu-section">
               <h2>{c}</h2>
               {byCategory[c].map((m) => (
-                <article key={m.id} className="dish-card">
+                <article key={m.id} className="dish-card"
+                         onClick={() => { if (window.matchMedia('(min-width: 760px)').matches) setDetail(m); }}>
                   <div className="dish-info">
                     <VegMark />
                     <h3>{m.name}</h3>
@@ -97,8 +100,11 @@ export default function Menu() {
                              onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }} />
                       : <div className="img-ph" />}
                     {cart.items[m.id]
-                      ? <Qty value={cart.items[m.id]} onChange={(q) => cart.setQty(m.id, q)} />
-                      : <button className="add-btn" onClick={() => cart.add(m.id)}>ADD</button>}
+                      ? <span style={{ display: 'contents' }} onClick={(e) => e.stopPropagation()}>
+                          <Qty value={cart.items[m.id]} onChange={(q) => cart.setQty(m.id, q)} />
+                        </span>
+                      : <button className="add-btn"
+                                onClick={(e) => { e.stopPropagation(); cart.add(m.id); }}>ADD</button>}
                   </div>
                 </article>
               ))}
@@ -112,6 +118,8 @@ export default function Menu() {
           <div>We confirm every order on WhatsApp.</div>
         </footer>
       </main>
+
+      {detail && <DishModal item={detail} onClose={() => setDetail(null)} />}
 
       {cart.count > 0 && (
         <button className="cart-bar" onClick={() => navigate('/checkout')}>

@@ -449,6 +449,7 @@ a { color: var(--primary); }
 /* ---------- pointer hover polish ---------- */
 @media (hover: hover) and (pointer: fine) {
   .dish-card { transition: transform .15s, box-shadow .15s; }
+  .dish-card { cursor: pointer; }
   .dish-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
   .chip:hover { border-color: #d6c9b2; }
   .chip.on:hover { border-color: var(--primary); }
@@ -463,3 +464,50 @@ a { color: var(--primary); }
   .seg button:hover { color: var(--ink); }
   .seg button.on:hover { color: var(--primary); }
 }
+
+/* ---------- dish detail modal (opened from cards on laptop) ---------- */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(38, 32, 25, .48);
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  animation: fade .15s ease;
+}
+@keyframes fade { from { opacity: 0; } }
+.modal {
+  position: relative; width: min(500px, 94vw); max-height: 88vh; overflow: auto;
+  background: var(--card); border-radius: 20px;
+  box-shadow: 0 32px 80px -24px rgba(20, 14, 8, .55);
+  animation: rise .22s cubic-bezier(.2, 1.1, .4, 1);
+}
+@keyframes rise { from { opacity: 0; transform: translateY(14px) scale(.97); } }
+.modal > img, .modal-img-ph {
+  width: 100%; height: 270px; object-fit: cover; display: block;
+  background: var(--line-soft);
+}
+.modal-close {
+  position: absolute; top: 14px; right: 14px; z-index: 1;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255, 253, 249, .93); color: var(--ink);
+  font-size: 20px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+.modal-close:hover { background: #fff; }
+.modal-body { padding: 18px 24px 24px; }
+.modal-meta {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11.5px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .9px;
+}
+.modal-body h3 {
+  font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+  font-size: 21px; font-weight: 700; letter-spacing: -.3px; margin: 9px 0 2px;
+}
+.modal-price { font-weight: 750; font-size: 16px; }
+.modal-body p { color: #5d5349; font-size: 14px; line-height: 1.6; margin: 10px 0 0; }
+.modal-foot { display: flex; align-items: center; gap: 12px; margin-top: 20px; }
+.modal-foot .qty { margin: 0; flex: 0 0 auto; }
+.modal-foot .qty button { padding: 10px 15px; }
+.modal-foot .primary { margin: 0; flex: 1; }
