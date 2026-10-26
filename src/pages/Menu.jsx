@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { listMenu, onChange } from '../lib/store.js';
+import { listMenu, onChange, getSettings } from '../lib/store.js';
 import { CATEGORIES } from '../data/seed.js';
 import { useCart } from '../lib/cart.jsx';
 import VegMark from '../components/VegMark.jsx';
@@ -10,12 +10,13 @@ import Qty from '../components/Qty.jsx';
 
 export default function Menu() {
   const [menu, setMenu] = useState(() => listMenu({ availableOnly: true }));
+  const [settings, setSettings] = useState(getSettings);
   const [filter, setFilter] = useState(null);
   const [detail, setDetail] = useState(null);
   const cart = useCart();
   const navigate = useNavigate();
 
-  useEffect(() => onChange(() => setMenu(listMenu({ availableOnly: true }))), []);
+  useEffect(() => onChange(() => { setMenu(listMenu({ availableOnly: true })); setSettings(getSettings()); }), []);
 
   const byCategory = useMemo(() => {
     const groups = {};
@@ -36,7 +37,7 @@ export default function Menu() {
         <div className="brand-row">
           <div className="brand-mono">K</div>
           <div>
-            <div className="brand-name">K&rsquo;s Kitchen <span>by Koral</span></div>
+            <div className="brand-name">K&rsquo;s Kitchen</div>
             <div className="brand-tag">Home-cooked in Mumbai</div>
           </div>
         </div>
@@ -46,6 +47,12 @@ export default function Menu() {
           <span className="badge">Orders via WhatsApp</span>
         </div>
       </header>
+
+      {!settings.kitchen_open && (
+        <div className="closed-banner">
+          We&rsquo;re closed right now. Browse the menu; ordering reopens soon.
+        </div>
+      )}
 
       <nav className="chips">
         {CATEGORIES.map((c) => (
