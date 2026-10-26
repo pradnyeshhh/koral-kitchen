@@ -64,13 +64,13 @@ export default function DishModal({ item, onClose, closed, onBlocked }) {
             {qty > 0 ? (
               <>
                 <Qty value={qty} onChange={(q) => cart.setQty(item.id, q)} />
-                <button className="primary" onClick={() => navigate('/demo/checkout')}>
+                <button className="primary"
+                        onClick={() => { if (closed) { onBlocked?.(); return; } navigate('/demo/checkout'); }}>
                   View cart →
                 </button>
               </>
             ) : (
-              <button className="primary"
-                      onClick={() => { if (closed) { onBlocked?.(); return; } cart.add(item.id); }}>
+              <button className="primary" onClick={() => cart.add(item.id)}>
                 Add to cart · ₹{item.price}
               </button>
             )}

@@ -126,11 +126,7 @@ export default function Menu() {
                           <Qty value={cart.items[m.id]} onChange={(q) => cart.setQty(m.id, q)} />
                         </span>
                       : <button className="add-btn"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (closed) { blockedToast(); return; }
-                                  cart.add(m.id);
-                                }}>ADD</button>}
+                                onClick={(e) => { e.stopPropagation(); cart.add(m.id); }}>ADD</button>}
                   </div>
                 </article>
               ))}
@@ -151,7 +147,8 @@ export default function Menu() {
       {toast && <div className="toast">{toast}</div>}
 
       {cart.count > 0 && (
-        <button className="cart-bar" onClick={() => navigate('/demo/checkout')}>
+        <button className="cart-bar"
+                onClick={() => { if (closed) { blockedToast(); return; } navigate('/demo/checkout'); }}>
           <span>{cart.count} item{cart.count > 1 ? 's' : ''} · ₹{cartTotal}</span>
           <span className="cart-bar-cta">View cart →</span>
         </button>
