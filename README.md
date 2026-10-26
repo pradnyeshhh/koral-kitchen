@@ -60,10 +60,9 @@ Then open the printed URL (usually http://localhost:5173).
 ## Resetting demo data
 
 All data is in your browser. To start fresh, run
-`localStorage.removeItem('kk_db_v4')` in the devtools console (or clear site data)
+`localStorage.removeItem('kk_db_v5')` in the devtools console (or clear site data)
 and reload; the menu re-seeds with 25 dishes across North Indian, Gujarati,
-Japanese, Italian, and Dessert, plus sample orders in every pipeline stage so the
-dashboard looks lived-in.
+Japanese, Italian, and Dessert. Orders start empty.
 
 ## Out of scope (left ready to add)
 

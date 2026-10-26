@@ -4,7 +4,7 @@
 // so this module can be swapped for API calls without touching the UI.
 import { SEED_MENU } from '../data/seed.js';
 
-const KEY = 'kk_db_v4';
+const KEY = 'kk_db_v5';
 
 function blankDb() {
   return {
@@ -25,7 +25,6 @@ function load() {
   } catch { /* fall through to fresh db */ }
   const db = blankDb();
   seedMenu(db);
-  seedOrders(db);
   save(db);
   return db;
 }
@@ -44,72 +43,6 @@ function seedMenu(db) {
 }
 
 function nextId(db) { return db.seq++; }
-
-// Sample customers and orders so the dashboard looks lived-in on first run.
-function seedOrders(db) {
-  const mins = (m) => new Date(Date.now() - m * 60000).toISOString();
-  const custs = [
-    ['Asha', 'Mehta', '9820012345', 'lodha', 'Kiara', 'B', '1204', null, true],
-    ['Rohan', 'Shah', '9833012876', 'lodha', 'Park Side', 'A', '803', null, false],
-    ['Meera', 'Jain', '9898121212', 'lodha', 'Trump Tower', 'B', '2104', null, true],
-    ['Kunal', 'Desai', '9833344556', 'other', null, null, null, '702, Sea Breeze CHS, Worli Sea Face Rd, Worli, 400018', false],
-    ['Priya', 'Nair', '9820788990', 'lodha', 'Allura', 'A', '1502', null, false],
-    ['Sameer', 'Kulkarni', '9821567834', 'other', null, null, null, '12, Green Acres, Dr Annie Besant Rd, Worli', false],
-    ['Divya', 'Rao', '9930456712', 'lodha', 'Marquees', 'B', '605', null, false],
-    ['Nikhil', 'Bhatt', '9867120945', 'lodha', 'Adrina', 'A', '1801', null, false],
-  ].map(([first_name, last_name, phone, customer_type, tower, wing, apartment, full_address, jain_default]) => {
-    const c = {
-      id: nextId(db), first_name, last_name, phone, customer_type,
-      tower, wing, apartment, full_address, jain_default,
-      created_at: mins(60 * 72),
-    };
-    db.customers.push(c);
-    return c;
-  });
-  // [customer index, status, [menu item id, qty, note?][], jain, free-from, minutes ago]
-  const sample = [
-    [0, 'open', [[1, 1, 'less spicy'], [6, 1], [21, 2]], true, 'no coriander', 12, 'delivery', 'Lunch (12-2 pm)'],
-    [3, 'open', [[12, 2], [14, 1]], false, '', 25, 'delivery', 'ASAP'],
-    [6, 'open', [[10, 2]], false, 'less oil', 40, 'pickup', 'Dinner (7-9 pm)'],
-    [1, 'accepted', [[16, 1], [17, 1], [24, 1]], false, '', 75, 'delivery', 'Dinner (7-9 pm)'],
-    [2, 'accepted', [[5, 1], [7, 1, 'extra chhundo']], true, '', 95, 'delivery', 'Lunch (12-2 pm)'],
-    [4, 'ready', [[4, 2], [22, 2]], false, '', 150, 'delivery', 'ASAP'],
-    [1, 'rejected', [[20, 1]], false, '', 300, 'delivery', 'ASAP'],
-    [5, 'completed', [[2, 1], [3, 1]], false, '', 1320, 'delivery', 'Dinner (7-9 pm)'],
-    [0, 'completed', [[8, 1], [10, 1]], true, 'no coriander', 1560, 'pickup', 'Lunch (12-2 pm)'],
-    [7, 'completed', [[11, 1], [13, 1], [25, 2]], false, '', 1800, 'delivery', 'ASAP'],
-  ];
-  const STAGE_OFFSETS = { open: 0, accepted: 8, ready: 35, completed: 55 };
-  const FLOW = ['open', 'accepted', 'ready', 'completed'];
-  sample.forEach(([ci, status, items, jain, freeFrom, minsAgo, fulfilment, slot]) => {
-    const orderId = nextId(db);
-    let total = 0;
-    items.forEach(([mid, qty, note]) => {
-      const m = db.menu_items.find((x) => x.id === mid);
-      db.order_items.push({
-        id: nextId(db), order_id: orderId, menu_item_id: mid,
-        quantity: qty, unit_price: m.price, note: note || null,
-      });
-      total += m.price * qty;
-    });
-    const status_log = {};
-    if (status === 'rejected') {
-      status_log.open = mins(minsAgo);
-      status_log.rejected = mins(minsAgo - 10);
-    } else {
-      FLOW.slice(0, FLOW.indexOf(status) + 1).forEach((st) => {
-        status_log[st] = mins(minsAgo - STAGE_OFFSETS[st]);
-      });
-    }
-    db.orders.push({
-      id: orderId, customer_id: custs[ci].id, status,
-      jain, free_from_note: freeFrom, total, created_at: mins(minsAgo),
-      status_log, reject_reason: status === 'rejected' ? 'Kitchen at capacity' : null,
-      fulfilment, slot,
-      payment_method: null, paid: null, paid_at: null, rider_id: null,
-    });
-  });
-}
 
 // ---- change subscription (storage event covers other tabs) ----
 export function onChange(fn) {
