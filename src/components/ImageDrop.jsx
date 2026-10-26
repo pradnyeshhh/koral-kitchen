@@ -32,7 +32,7 @@ export default function ImageDrop({ value, onChange }) {
       <div className="flex items-center gap-3">
         <img src={value} alt="" className="h-16 w-20 rounded-lg object-cover" />
         <button type="button"
-                className="rounded-lg border border-[#e9dfcf] bg-white px-3 py-1.5 text-[13px] font-semibold"
+                className="rounded-lg border border-[#e2e8e3] bg-white px-3 py-1.5 text-[13px] font-semibold"
                 onClick={() => inputRef.current?.click()}>
           Replace
         </button>
@@ -51,18 +51,18 @@ export default function ImageDrop({ value, onChange }) {
     <div>
       <div role="button" tabIndex={0}
            className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border-2 border-dashed px-4 py-6 text-center transition-colors ${
-             over ? 'border-[#cd5825] bg-[#faecd9]' : 'border-[#e9dfcf] bg-[#fdf9f1]'
+             over ? 'border-[#1b8a4c] bg-[#e2f1e7]' : 'border-[#e2e8e3] bg-[#f3f7f4]'
            }`}
            onClick={() => inputRef.current?.click()}
            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') inputRef.current?.click(); }}
            onDragOver={(e) => { e.preventDefault(); setOver(true); }}
            onDragLeave={() => setOver(false)}
            onDrop={(e) => { e.preventDefault(); setOver(false); handleFiles(e.dataTransfer.files); }}>
-        <FiUploadCloud className={`text-2xl ${over ? 'text-[#cd5825]' : 'text-[#8e8374]'}`} />
-        <span className="text-[13px] font-semibold text-[#6d6253]">
+        <FiUploadCloud className={`text-2xl ${over ? 'text-[#1b8a4c]' : 'text-[#707b74]'}`} />
+        <span className="text-[13px] font-semibold text-[#4f5a53]">
           Drop a photo here, or click to browse
         </span>
-        <span className="text-xs text-[#8e8374]">JPG or PNG, resized automatically</span>
+        <span className="text-xs text-[#707b74]">JPG or PNG, resized automatically</span>
       </div>
       {err && <p className="mt-1.5 text-[13px] font-medium text-[#b9382b]">{err}</p>}
       <input ref={inputRef} type="file" accept="image/*" className="hidden"
