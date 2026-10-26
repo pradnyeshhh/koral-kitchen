@@ -7,7 +7,7 @@ import Qty from '../components/Qty.jsx';
 function composeAddress(f) {
   let a = `${f.flat_no.trim()}, ${f.building.trim()}, ${f.street.trim()}`;
   if (f.landmark.trim()) a += `, ${f.landmark.trim()}`;
-  if (f.pincode.trim()) a += ` \u2013 ${f.pincode.trim()}`;
+  if (f.pincode.trim()) a += `, ${f.pincode.trim()}`;
   return a;
 }
 
@@ -130,7 +130,7 @@ export default function Checkout() {
             <input inputMode="numeric" value={form.phone} onChange={set('phone')}
                    onBlur={onPhoneBlur} placeholder="10-digit number" autoComplete="tel" />
           </label>
-          <p className="hint">All order updates happen on WhatsApp — the chef will message you to confirm.</p>
+          <p className="hint">All order updates happen on WhatsApp. The chef will message you to confirm.</p>
 
           <h2 className="card-title">Deliver to</h2>
           <div className="seg">
@@ -188,7 +188,7 @@ export default function Checkout() {
           <h2 className="card-title">Kitchen notes</h2>
           <label className="check">
             <input type="checkbox" checked={form.jain} onChange={set('jain')} />
-            <span><strong>Jain preparation</strong> — no onion, garlic or root vegetables</span>
+            <span><strong>Jain preparation</strong> (no onion, garlic or root vegetables)</span>
           </label>
 
           <label>Anything to leave out?
