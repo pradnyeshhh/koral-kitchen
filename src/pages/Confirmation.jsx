@@ -16,7 +16,9 @@ export default function Confirmation() {
         <h1>Order placed!</h1>
         {order ? (
           <>
-            <p className="muted">Order #{order.id} · ₹{order.total}</p>
+            <p className="muted">
+              Order #{order.id} · ₹{order.total} · {order.fulfilment === 'pickup' ? 'Self pickup' : 'Delivery'} · {order.slot}
+            </p>
             <ul className="confirm-items">
               {order.items.map((i) => <li key={i.id}>{i.quantity} × {i.name}</li>)}
             </ul>

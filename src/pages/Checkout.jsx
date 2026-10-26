@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { listMenu, createOrder, findCustomerByPhone, getSettings, onChange, TOWERS } from '../lib/store.js';
+import { listMenu, createOrder, findCustomerByPhone, getSettings, onChange, TOWERS, SLOTS } from '../lib/store.js';
 import { useCart } from '../lib/cart.jsx';
 import Qty from '../components/Qty.jsx';
 
@@ -21,6 +21,7 @@ export default function Checkout() {
     first_name: '', last_name: '', phone: '',
     customer_type: 'lodha', tower: TOWERS[0], wing: 'A', apartment: '',
     flat_no: '', building: '', street: '', landmark: '', pincode: '',
+    fulfilment: 'delivery', slot: 'ASAP',
     jain: false, free_from_note: '',
   });
   const [error, setError] = useState('');
@@ -65,12 +66,14 @@ export default function Checkout() {
     if (!lines.length) { setError('Your cart is empty.'); return; }
     if (!form.first_name.trim() || !form.last_name.trim()) { setError('Please enter your name.'); return; }
     if (!/^\d{10}$/.test(form.phone.replace(/\D/g, '').slice(-10))) { setError('Please enter a 10-digit phone number.'); return; }
-    if (form.customer_type === 'lodha' && !/^\d{1,4}$/.test(form.apartment)) { setError('Apartment number should be up to 4 digits.'); return; }
-    if (form.customer_type === 'other') {
-      if (!form.flat_no.trim() || !form.building.trim() || !form.street.trim()) {
-        setError('Please fill flat no., building and street / area.'); return;
+    if (form.fulfilment === 'delivery') {
+      if (form.customer_type === 'lodha' && !/^\d{1,4}$/.test(form.apartment)) { setError('Apartment number should be up to 4 digits.'); return; }
+      if (form.customer_type === 'other') {
+        if (!form.flat_no.trim() || !form.building.trim() || !form.street.trim()) {
+          setError('Please fill flat no., building and street / area.'); return;
+        }
+        if (form.pincode && !/^\d{6}$/.test(form.pincode)) { setError('Pincode should be 6 digits.'); return; }
       }
-      if (form.pincode && !/^\d{6}$/.test(form.pincode)) { setError('Pincode should be 6 digits.'); return; }
     }
 
     const order = createOrder({
@@ -78,6 +81,7 @@ export default function Checkout() {
         first_name: form.first_name.trim(),
         last_name: form.last_name.trim(),
         phone: form.phone.replace(/\D/g, '').slice(-10),
+        ...(form.fulfilment === 'delivery' ? {
         customer_type: form.customer_type,
         tower: form.customer_type === 'lodha' ? form.tower : null,
         wing: form.customer_type === 'lodha' ? form.wing : null,
@@ -88,7 +92,10 @@ export default function Checkout() {
         landmark: form.customer_type === 'other' ? form.landmark.trim() : null,
         pincode: form.customer_type === 'other' ? form.pincode.trim() : null,
         full_address: form.customer_type === 'other' ? composeAddress(form) : null,
+        } : {}),
       },
+      fulfilment: form.fulfilment,
+      slot: form.slot,
       items: lines.map((l) => ({ menu_item_id: l.id, quantity: l.qty, note: cart.notes[l.id] || '' })),
       jain: form.jain,
       freeFromNote: form.free_from_note,
@@ -153,7 +160,32 @@ export default function Checkout() {
           </label>
           <p className="hint">All order updates happen on WhatsApp. The chef will message you to confirm.</p>
 
-          <h2 className="card-title">Deliver to</h2>
+          <h2 className="card-title">Getting your order</h2>
+          <div className="seg">
+            <button type="button" className={form.fulfilment === 'delivery' ? 'on' : ''}
+                    onClick={() => setForm((f) => ({ ...f, fulfilment: 'delivery' }))}>Delivery</button>
+            <button type="button" className={form.fulfilment === 'pickup' ? 'on' : ''}
+                    onClick={() => setForm((f) => ({ ...f, fulfilment: 'pickup' }))}>Self pickup</button>
+          </div>
+
+          <div className="field">
+            <span className="field-label">Time slot</span>
+            <div className="opt-chips">
+              {SLOTS.map((sl) => (
+                <button key={sl} type="button"
+                        className={`opt-chip ${form.slot === sl ? 'on' : ''}`}
+                        onClick={() => setForm((f) => ({ ...f, slot: sl }))}>
+                  {sl}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {form.fulfilment === 'pickup' && (
+            <p className="hint">Pick up from the kitchen in Lodha Park. We&rsquo;ll share the exact tower on WhatsApp.</p>
+          )}
+
+          {form.fulfilment === 'delivery' && (<>
           <div className="seg">
             <button type="button" className={form.customer_type === 'lodha' ? 'on' : ''}
                     onClick={() => setForm((f) => ({ ...f, customer_type: 'lodha' }))}>Lodha Park resident</button>
@@ -205,6 +237,7 @@ export default function Checkout() {
               </div>
             </>
           )}
+          </>)}
 
           <h2 className="card-title">Kitchen notes</h2>
           <label className="check">

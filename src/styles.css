@@ -663,3 +663,7 @@ a { color: var(--primary); }
   .menu-search { padding: 14px 0 0; display: flex; justify-content: center; }
   .menu-search .search-box { width: 420px; }
 }
+
+/* ---------- fulfilment + slot flags ---------- */
+.flag.slot { background: var(--line-soft); color: #434e47; border: 1px solid var(--line); font-weight: 600; }
+.flag.pickup { background: var(--ink); color: #fff; letter-spacing: .6px; }

@@ -88,14 +88,18 @@ function OrderCard({ order: o }) {
         <div className="order-total">₹{o.total}</div>
       </header>
 
-      <div className="order-addr">{formatAddress(c)}</div>
+      <div className="order-addr">
+        {o.fulfilment === 'pickup' ? 'Self pickup from the kitchen' : formatAddress(c)}
+      </div>
       <div className="order-phone">
         <span>{c.phone}</span>
         <a className="wa-btn" href={wa} target="_blank" rel="noreferrer"><FaWhatsapp /> WhatsApp</a>
       </div>
 
-      {(o.jain || o.free_from_note || o.reject_reason) && (
+      {(o.slot || o.fulfilment === 'pickup' || o.jain || o.free_from_note || o.reject_reason) && (
         <div className="order-flags">
+          {o.slot && <span className="flag slot">{o.slot}</span>}
+          {o.fulfilment === 'pickup' && <span className="flag pickup">PICKUP</span>}
           {o.jain && <span className="flag jain">JAIN</span>}
           {o.free_from_note && <span className="flag note">Leave out: {o.free_from_note}</span>}
           {o.reject_reason && <span className="flag rej">Reason: {o.reject_reason}</span>}
