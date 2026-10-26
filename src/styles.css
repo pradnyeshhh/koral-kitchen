@@ -645,8 +645,7 @@ a { color: var(--primary); }
   .menu-search .search-box { width: 420px; }
 }
 
-/* ---------- fulfilment + slot flags ---------- */
-.flag.slot { background: var(--line-soft); color: #434e47; border: 1px solid var(--line); font-weight: 600; }
+/* ---------- fulfilment flags ---------- */
 .flag.pickup { background: var(--ink); color: #fff; letter-spacing: .6px; }
 
 /* ---------- category customisation editor ---------- */
@@ -668,7 +667,3 @@ a { color: var(--primary); }
   border: 1px solid var(--line); border-radius: 10px; padding: 8px 16px;
   background: #fff; font-size: 13px; font-weight: 650; color: var(--primary);
 }
-
-/* slots that have passed for the day */
-.opt-chip:disabled { opacity: .4; cursor: default; }
-.opt-chip:disabled:active { transform: none; }

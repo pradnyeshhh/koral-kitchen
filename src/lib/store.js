@@ -4,7 +4,7 @@
 // so this module can be swapped for API calls without touching the UI.
 import { SEED_MENU } from '../data/seed.js';
 
-const KEY = 'kk_db_v4';
+const KEY = 'kk_db_v5';
 
 function blankDb() {
   return {
@@ -25,7 +25,6 @@ function load() {
   } catch { /* fall through to fresh db */ }
   const db = blankDb();
   seedMenu(db);
-  seedOrders(db);
   save(db);
   return db;
 }
@@ -45,49 +44,53 @@ function seedMenu(db) {
 
 function nextId(db) { return db.seq++; }
 
-// Sample customers and orders so the dashboard looks lived-in on first run.
-function seedOrders(db) {
+// ---- demo overlay ----
+// Sample customers and orders shown alongside real data. They are rebuilt fresh
+// on every page load, so playing with their statuses resets on refresh, while
+// orders placed through the demo site persist normally.
+let demoData = null;
+
+function buildDemoData() {
   const mins = (m) => new Date(Date.now() - m * 60000).toISOString();
-  const custs = [
+  let id = 9000;
+  const customers = [
     ['Asha', 'Mehta', '9820012345', 'lodha', 'Kiara', 'B', '1204', null, true],
     ['Rohan', 'Shah', '9833012876', 'lodha', 'Park Side', 'A', '803', null, false],
     ['Meera', 'Jain', '9898121212', 'lodha', 'Trump Tower', 'B', '2104', null, true],
     ['Kunal', 'Desai', '9833344556', 'other', null, null, null, '702, Sea Breeze CHS, Worli Sea Face Rd, Worli, 400018', false],
     ['Priya', 'Nair', '9820788990', 'lodha', 'Allura', 'A', '1502', null, false],
     ['Sameer', 'Kulkarni', '9821567834', 'other', null, null, null, '12, Green Acres, Dr Annie Besant Rd, Worli', false],
-    ['Divya', 'Rao', '9930456712', 'lodha', 'Marquees', 'B', '605', null, false],
+    ['Divya', 'Rao', '9930456712', 'lodha', 'Marquise', 'B', '605', null, false],
     ['Nikhil', 'Bhatt', '9867120945', 'lodha', 'Adrina', 'A', '1801', null, false],
-  ].map(([first_name, last_name, phone, customer_type, tower, wing, apartment, full_address, jain_default]) => {
-    const c = {
-      id: nextId(db), first_name, last_name, phone, customer_type,
-      tower, wing, apartment, full_address, jain_default,
-      created_at: mins(60 * 72),
-    };
-    db.customers.push(c);
-    return c;
-  });
-  // [customer index, status, [menu item id, qty, note?][], jain, free-from, minutes ago]
+  ].map(([first_name, last_name, phone, customer_type, tower, wing, apartment, full_address, jain_default]) => ({
+    id: id++, first_name, last_name, phone, customer_type,
+    tower, wing, apartment, full_address, jain_default,
+    created_at: mins(60 * 72),
+  }));
+  // [customer index, status, [menu item id, qty, note?][], jain, free-from, minutes ago, fulfilment]
   const sample = [
-    [0, 'open', [[1, 1, 'less spicy'], [6, 1], [21, 2]], true, 'no coriander', 12, 'delivery', 'Lunch (12-2 pm)'],
-    [3, 'open', [[12, 2], [14, 1]], false, '', 25, 'delivery', 'ASAP'],
-    [6, 'open', [[10, 2]], false, 'less oil', 40, 'pickup', 'Dinner (7-9 pm)'],
-    [1, 'accepted', [[16, 1], [17, 1], [24, 1]], false, '', 75, 'delivery', 'Dinner (7-9 pm)'],
-    [2, 'accepted', [[5, 1], [7, 1, 'extra chhundo']], true, '', 95, 'delivery', 'Lunch (12-2 pm)'],
-    [4, 'ready', [[4, 2], [22, 2]], false, '', 150, 'delivery', 'ASAP'],
-    [1, 'rejected', [[20, 1]], false, '', 300, 'delivery', 'ASAP'],
-    [5, 'completed', [[2, 1], [3, 1]], false, '', 1320, 'delivery', 'Dinner (7-9 pm)'],
-    [0, 'completed', [[8, 1], [10, 1]], true, 'no coriander', 1560, 'pickup', 'Lunch (12-2 pm)'],
-    [7, 'completed', [[11, 1], [13, 1], [25, 2]], false, '', 1800, 'delivery', 'ASAP'],
+    [0, 'open', [[1, 1, 'less spicy'], [6, 1], [21, 2]], true, 'no coriander', 12, 'delivery'],
+    [3, 'open', [[12, 2], [14, 1]], false, '', 25, 'delivery'],
+    [6, 'open', [[10, 2]], false, 'less oil', 40, 'pickup'],
+    [1, 'accepted', [[16, 1], [17, 1], [24, 1]], false, '', 75, 'delivery'],
+    [2, 'accepted', [[5, 1], [7, 1, 'extra chhundo']], true, '', 95, 'delivery'],
+    [4, 'ready', [[4, 2], [22, 2]], false, '', 150, 'delivery'],
+    [1, 'rejected', [[20, 1]], false, '', 300, 'delivery'],
+    [5, 'completed', [[2, 1], [3, 1]], false, '', 1320, 'delivery'],
+    [0, 'completed', [[8, 1], [10, 1]], true, 'no coriander', 1560, 'pickup'],
+    [7, 'completed', [[11, 1], [13, 1], [25, 2]], false, '', 1800, 'delivery'],
   ];
   const STAGE_OFFSETS = { open: 0, accepted: 8, ready: 35, completed: 55 };
   const FLOW = ['open', 'accepted', 'ready', 'completed'];
-  sample.forEach(([ci, status, items, jain, freeFrom, minsAgo, fulfilment, slot]) => {
-    const orderId = nextId(db);
+  const orders = [];
+  const order_items = [];
+  sample.forEach(([ci, status, items, jain, freeFrom, minsAgo, fulfilment]) => {
+    const orderId = id++;
     let total = 0;
     items.forEach(([mid, qty, note]) => {
-      const m = db.menu_items.find((x) => x.id === mid);
-      db.order_items.push({
-        id: nextId(db), order_id: orderId, menu_item_id: mid,
+      const m = SEED_MENU[mid - 1];
+      order_items.push({
+        id: id++, order_id: orderId, menu_item_id: mid,
         quantity: qty, unit_price: m.price, note: note || null,
       });
       total += m.price * qty;
@@ -101,16 +104,28 @@ function seedOrders(db) {
         status_log[st] = mins(minsAgo - STAGE_OFFSETS[st]);
       });
     }
-    db.orders.push({
-      id: orderId, customer_id: custs[ci].id, status,
+    orders.push({
+      id: orderId, customer_id: customers[ci].id, status,
       jain, free_from_note: freeFrom, total, created_at: mins(minsAgo),
       status_log, reject_reason: status === 'rejected' ? 'Kitchen at capacity' : null,
-      fulfilment, slot,
+      fulfilment, demo: true,
       payment_method: null, paid: null, paid_at: null, rider_id: null,
     });
   });
+  return { customers, orders, order_items };
 }
 
+function getDemoData() {
+  if (demoData) return demoData;
+  try {
+    if (localStorage.getItem('kk_demo_off') === '1') {
+      demoData = { customers: [], orders: [], order_items: [] };
+      return demoData;
+    }
+  } catch { /* storage unavailable: keep the overlay */ }
+  demoData = buildDemoData();
+  return demoData;
+}
 // ---- change subscription (storage event covers other tabs) ----
 export function onChange(fn) {
   const handler = () => fn();
@@ -159,7 +174,9 @@ export function deleteMenuItem(id) {
 // ---- customers ----
 export function findCustomerByPhone(phone) {
   const db = load();
-  return db.customers.find((c) => c.phone === phone) || null;
+  return db.customers.find((c) => c.phone === phone)
+    || getDemoData().customers.find((c) => c.phone === phone)
+    || null;
 }
 
 function upsertCustomer(db, c) {
@@ -174,7 +191,7 @@ function upsertCustomer(db, c) {
 }
 
 // ---- orders ----
-export function createOrder({ customer, items, jain, freeFromNote, fulfilment, slot }) {
+export function createOrder({ customer, items, jain, freeFromNote, fulfilment }) {
   // customer: {first_name,last_name,phone,customer_type,tower,wing,apartment,full_address}
   // items: [{ menu_item_id, quantity, note }]
   const db = load();
@@ -196,7 +213,6 @@ export function createOrder({ customer, items, jain, freeFromNote, fulfilment, s
     jain: !!jain, free_from_note: (freeFromNote || '').trim(),
     total, created_at: now, status_log: { open: now }, reject_reason: null,
     fulfilment: fulfilment === 'pickup' ? 'pickup' : 'delivery',
-    slot: slot || 'ASAP',
     // future columns, nullable from day one
     payment_method: null, paid: null, paid_at: null, rider_id: null,
   };
@@ -209,7 +225,7 @@ export function listOrders(status) {
   const db = load();
   // work queues run oldest-first so the chef cooks in order; history stays newest-first
   const fifo = status === 'accepted' || status === 'ready';
-  return db.orders
+  return [...db.orders, ...getDemoData().orders]
     .filter((o) => !status || o.status === status)
     .sort((a, b) => (fifo ? 1 : -1) * (new Date(a.created_at) - new Date(b.created_at)))
     .map((o) => hydrate(db, o));
@@ -218,11 +234,20 @@ export function listOrders(status) {
 export function orderCounts() {
   const db = load();
   const counts = { open: 0, accepted: 0, ready: 0, completed: 0, rejected: 0 };
-  db.orders.forEach((o) => { counts[o.status] = (counts[o.status] || 0) + 1; });
+  [...db.orders, ...getDemoData().orders].forEach((o) => { counts[o.status] = (counts[o.status] || 0) + 1; });
   return counts;
 }
 
 export function setOrderStatus(id, status, { reason } = {}) {
+  // demo orders change in memory only, so a refresh restores them
+  const demoOrder = getDemoData().orders.find((x) => x.id === id);
+  if (demoOrder) {
+    demoOrder.status = status;
+    demoOrder.status_log = { ...(demoOrder.status_log || {}), [status]: new Date().toISOString() };
+    if (status === 'rejected') demoOrder.reject_reason = (reason || '').trim() || null;
+    window.dispatchEvent(new Event('kk-db-changed'));
+    return demoOrder;
+  }
   const db = load();
   const o = db.orders.find((x) => x.id === id);
   if (!o) return null;
@@ -246,8 +271,10 @@ export function setCategoryOptions(category, options) {
 }
 
 function hydrate(db, order) {
-  const customer = db.customers.find((c) => c.id === order.customer_id) || {};
-  const items = db.order_items
+  const demo = getDemoData();
+  const customer = db.customers.find((c) => c.id === order.customer_id)
+    || demo.customers.find((c) => c.id === order.customer_id) || {};
+  const items = [...db.order_items, ...demo.order_items]
     .filter((oi) => oi.order_id === order.id)
     .map((oi) => ({
       ...oi,
@@ -263,21 +290,7 @@ export function formatAddress(c) {
   return c.full_address || '';
 }
 
-export const TOWERS = ['Park Side', 'Allura', 'Marquees', 'Trump Tower', 'Kiara', 'Adrina'];
-export const SLOT_DEFS = [
-  { label: 'ASAP', end: null },          // always available
-  { label: 'Lunch (12-2 pm)', end: 14 }, // disabled once its window has passed
-  { label: 'Evening (5-7 pm)', end: 19 },
-  { label: 'Dinner (7-9 pm)', end: 21 },
-];
-export const SLOTS = SLOT_DEFS.map((s) => s.label);
-
-export function isSlotPast(label, now = new Date()) {
-  const def = SLOT_DEFS.find((s) => s.label === label);
-  if (!def || def.end == null) return false;
-  return now.getHours() + now.getMinutes() / 60 >= def.end;
-}
-
+export const TOWERS = ['Park Side', 'Allura', 'Marquise', 'Trump Tower', 'Kiara', 'Adrina'];
 export const DEFAULT_CATEGORY_OPTIONS = {
   'North Indian': ['Less spicy', 'Extra spicy', 'No onion', 'No garlic', 'Less oil', 'No coriander'],
   'Gujarati': ['Less spicy', 'Less sweet', 'No onion', 'No garlic', 'Less oil'],

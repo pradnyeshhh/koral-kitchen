@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { listMenu, createOrder, findCustomerByPhone, TOWERS, SLOTS, isSlotPast } from '../lib/store.js';
+import { listMenu, createOrder, findCustomerByPhone, TOWERS } from '../lib/store.js';
 import { useCart } from '../lib/cart.jsx';
 import Qty from '../components/Qty.jsx';
 
@@ -19,7 +19,7 @@ export default function Checkout() {
     first_name: '', last_name: '', phone: '',
     customer_type: 'lodha', tower: TOWERS[0], wing: 'A', apartment: '',
     flat_no: '', building: '', street: '', landmark: '', pincode: '',
-    fulfilment: 'delivery', slot: 'ASAP',
+    fulfilment: 'delivery',
     jain: false, free_from_note: '',
   });
   const [error, setError] = useState('');
@@ -61,7 +61,6 @@ export default function Checkout() {
   const placeOrder = (e) => {
     e.preventDefault();
     if (!lines.length) { setError('Your cart is empty.'); return; }
-    if (isSlotPast(form.slot)) { setError('That time slot is done for today. Please pick another.'); return; }
     if (!form.first_name.trim() || !form.last_name.trim()) { setError('Please enter your name.'); return; }
     if (!/^\d{10}$/.test(form.phone.replace(/\D/g, '').slice(-10))) { setError('Please enter a 10-digit phone number.'); return; }
     if (form.fulfilment === 'delivery') {
@@ -93,7 +92,6 @@ export default function Checkout() {
         } : {}),
       },
       fulfilment: form.fulfilment,
-      slot: form.slot,
       items: lines.map((l) => ({ menu_item_id: l.id, quantity: l.qty, note: cart.notes[l.id] || '' })),
       jain: form.jain,
       freeFromNote: form.free_from_note,
@@ -159,23 +157,6 @@ export default function Checkout() {
                     onClick={() => setForm((f) => ({ ...f, fulfilment: 'delivery' }))}>Delivery</button>
             <button type="button" className={form.fulfilment === 'pickup' ? 'on' : ''}
                     onClick={() => setForm((f) => ({ ...f, fulfilment: 'pickup' }))}>Self pickup</button>
-          </div>
-
-          <div className="field">
-            <span className="field-label">Time slot</span>
-            <div className="opt-chips">
-              {SLOTS.map((sl) => {
-                const past = isSlotPast(sl);
-                return (
-                  <button key={sl} type="button" disabled={past}
-                          title={past ? 'Done for today' : undefined}
-                          className={`opt-chip ${form.slot === sl ? 'on' : ''}`}
-                          onClick={() => setForm((f) => ({ ...f, slot: sl }))}>
-                    {sl}
-                  </button>
-                );
-              })}
-            </div>
           </div>
 
           {form.fulfilment === 'pickup' && (

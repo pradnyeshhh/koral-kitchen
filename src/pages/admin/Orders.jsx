@@ -91,9 +91,8 @@ function OrderCard({ order: o }) {
       </div>
       <div className="order-phone">{c.phone}</div>
 
-      {(o.slot || o.fulfilment === 'pickup' || o.jain || o.free_from_note || o.reject_reason) && (
+      {(o.fulfilment === 'pickup' || o.jain || o.free_from_note || o.reject_reason) && (
         <div className="order-flags">
-          {o.slot && <span className="flag slot">{o.slot}</span>}
           {o.fulfilment === 'pickup' && <span className="flag pickup">PICKUP</span>}
           {o.jain && <span className="flag jain">JAIN</span>}
           {o.free_from_note && <span className="flag note">Leave out: {o.free_from_note}</span>}

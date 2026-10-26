@@ -17,7 +17,7 @@ export default function Confirmation() {
         {order ? (
           <>
             <p className="muted">
-              Order #{order.id} · ₹{order.total} · {order.fulfilment === 'pickup' ? 'Self pickup' : 'Delivery'} · {order.slot}
+              Order #{order.id} · ₹{order.total} · {order.fulfilment === 'pickup' ? 'Self pickup' : 'Delivery'}
             </p>
             <ul className="confirm-items">
               {order.items.map((i) => <li key={i.id}>{i.quantity} × {i.name}</li>)}
