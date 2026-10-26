@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
-import { listMenu, createMenuItem, updateMenuItem, deleteMenuItem, onChange } from '../../lib/store.js';
+import {
+  listMenu, createMenuItem, updateMenuItem, deleteMenuItem, onChange,
+  getCategoryOptions, setCategoryOptions,
+} from '../../lib/store.js';
 import { CATEGORIES } from '../../data/seed.js';
 import ImageDrop from '../../components/ImageDrop.jsx';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { FaMagnifyingGlass, FaXmark, FaChevronDown } from 'react-icons/fa6';
 
 const EMPTY = { name: '', description: '', price: '', photo: '', category: CATEGORIES[0], available: true };
 
@@ -46,6 +49,8 @@ export default function MenuManager() {
         </div>
       </div>
 
+      <CategoryOptionsEditor />
+
       {editing === 'new' && <ItemForm initial={EMPTY} onSave={save} onCancel={() => setEditing(null)} />}
 
       {shown.length === 0 && <p className="muted empty">No dishes match.</p>}
@@ -76,6 +81,54 @@ export default function MenuManager() {
         ))}
       </div>
     </div>
+  );
+}
+
+function CategoryOptionsEditor() {
+  const [open, setOpen] = useState(false);
+  const [tick, setTick] = useState(0);
+  const [drafts, setDrafts] = useState({});
+  useEffect(() => onChange(() => setTick((t) => t + 1)), []);
+
+  const add = (cat) => {
+    const val = (drafts[cat] || '').trim();
+    const list = getCategoryOptions(cat);
+    if (!val || list.some((o) => o.toLowerCase() === val.toLowerCase())) return;
+    setCategoryOptions(cat, [...list, val]);
+    setDrafts((d) => ({ ...d, [cat]: '' }));
+  };
+  const remove = (cat, o) => {
+    setCategoryOptions(cat, getCategoryOptions(cat).filter((x) => x !== o));
+  };
+
+  return (
+    <section className={`card copt ${open ? 'open' : ''}`} data-tick={tick}>
+      <button type="button" className="copt-head" onClick={() => setOpen(!open)}>
+        <span>Quick customisations <span className="muted small">· what customers can pick per category</span></span>
+        <FaChevronDown />
+      </button>
+      {open && CATEGORIES.map((cat) => (
+        <div key={cat} className="copt-row">
+          <span className="field-label">{cat}</span>
+          <div className="opt-chips">
+            {getCategoryOptions(cat).map((o) => (
+              <span key={o} className="opt-chip copt-chip">
+                {o}
+                <button type="button" aria-label={`Remove ${o}`} onClick={() => remove(cat, o)}>
+                  <FaXmark />
+                </button>
+              </span>
+            ))}
+          </div>
+          <div className="copt-add">
+            <input value={drafts[cat] || ''} placeholder="Add an option"
+                   onChange={(e) => setDrafts((d) => ({ ...d, [cat]: e.target.value }))}
+                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); add(cat); } }} />
+            <button type="button" onClick={() => add(cat)}>Add</button>
+          </div>
+        </div>
+      ))}
+    </section>
   );
 }
 

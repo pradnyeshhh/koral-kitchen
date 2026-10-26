@@ -681,3 +681,23 @@ a { color: var(--primary); }
 @media (min-width: 760px) {
   .toast { bottom: 40px; }
 }
+
+/* ---------- category customisation editor ---------- */
+.copt { padding: 0; overflow: hidden; }
+.copt-head {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  padding: 15px 18px; font-size: 14px; font-weight: 650; text-align: left;
+}
+.copt-head svg { color: var(--muted); transition: transform .18s; }
+.copt.open .copt-head svg { transform: rotate(180deg); }
+.copt-row { padding: 2px 18px 14px; }
+.copt-row .opt-chips { margin: 2px 0 8px; }
+.copt-chip { display: inline-flex; align-items: center; gap: 6px; }
+.copt-chip button { display: flex; padding: 1px; color: var(--muted); font-size: 11px; }
+.copt-chip button:hover { color: var(--red); }
+.copt-add { display: flex; gap: 8px; max-width: 360px; }
+.copt-add input { margin: 0; padding: 8px 11px; font-size: 13px; }
+.copt-add button {
+  border: 1px solid var(--line); border-radius: 10px; padding: 8px 16px;
+  background: #fff; font-size: 13px; font-weight: 650; color: var(--primary);
+}

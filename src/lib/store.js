@@ -9,7 +9,7 @@ const KEY = 'kk_db_v4';
 function blankDb() {
   return {
     customers: [], menu_items: [], orders: [], order_items: [],
-    settings: { kitchen_open: true }, seq: 1,
+    settings: { kitchen_open: true, category_options: DEFAULT_CATEGORY_OPTIONS }, seq: 1,
   };
 }
 
@@ -19,6 +19,7 @@ function load() {
     if (raw) {
       const db = JSON.parse(raw);
       if (!db.settings) db.settings = { kitchen_open: true };
+      if (!db.settings.category_options) db.settings.category_options = DEFAULT_CATEGORY_OPTIONS;
       return db;
     }
   } catch { /* fall through to fresh db */ }
@@ -237,6 +238,17 @@ export function getSettings() {
   return load().settings;
 }
 
+export function getCategoryOptions(category) {
+  const opts = load().settings.category_options || {};
+  return opts[category] || [];
+}
+
+export function setCategoryOptions(category, options) {
+  const db = load();
+  db.settings.category_options = { ...(db.settings.category_options || {}), [category]: options };
+  save(db);
+}
+
 export function setKitchenOpen(open) {
   const db = load();
   db.settings = { ...db.settings, kitchen_open: !!open };
@@ -263,3 +275,11 @@ export function formatAddress(c) {
 
 export const TOWERS = ['Park Side', 'Allura', 'Marquees', 'Trump Tower', 'Kiara', 'Adrina'];
 export const SLOTS = ['ASAP', 'Lunch (12-2 pm)', 'Evening (5-7 pm)', 'Dinner (7-9 pm)'];
+
+export const DEFAULT_CATEGORY_OPTIONS = {
+  'North Indian': ['Less spicy', 'Extra spicy', 'No onion', 'No garlic', 'Less oil', 'No coriander'],
+  'Gujarati': ['Less spicy', 'Less sweet', 'No onion', 'No garlic', 'Less oil'],
+  'Japanese': ['No wasabi', 'Less salt', 'Extra soy', 'No spring onion'],
+  'Italian': ['Extra cheese', 'No chilli flakes', 'No garlic', 'No olives'],
+  'Dessert': ['Less sugar', 'Sugar free', 'No nuts', 'Extra nuts'],
+};

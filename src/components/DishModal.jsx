@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import VegMark from './VegMark.jsx';
 import Qty from './Qty.jsx';
 import { useCart } from '../lib/cart.jsx';
+import { getCategoryOptions } from '../lib/store.js';
 import { FaXmark } from 'react-icons/fa6';
-
-const QUICK_OPTIONS = ['Less spicy', 'Extra spicy', 'No onion', 'No garlic', 'Less oil', 'No coriander'];
 
 export default function DishModal({ item, onClose, closed, onBlocked }) {
   const cart = useCart();
@@ -22,6 +21,7 @@ export default function DishModal({ item, onClose, closed, onBlocked }) {
   }, [onClose]);
 
   const qty = cart.items[item.id] || 0;
+  const quickOptions = getCategoryOptions(item.category);
   const note = cart.notes[item.id] || '';
   const parts = note.split(',').map((x) => x.trim()).filter(Boolean);
   const hasOpt = (o) => parts.some((x) => x.toLowerCase() === o.toLowerCase());
@@ -48,7 +48,7 @@ export default function DishModal({ item, onClose, closed, onBlocked }) {
           <div className="modal-note">
             <span className="field-label">Customise <span className="opt">(optional)</span></span>
             <div className="opt-chips">
-              {QUICK_OPTIONS.map((o) => (
+              {quickOptions.map((o) => (
                 <button key={o} type="button"
                         className={`opt-chip ${hasOpt(o) ? 'on' : ''}`}
                         onClick={() => toggleOpt(o)}>
