@@ -200,6 +200,46 @@ function upsertCustomer(db, c) {
   return customer;
 }
 
+// ---- customers directory ----
+// Real and demo customers merged, deduped by phone (real data wins), with
+// order stats gathered across both pools.
+export function listCustomers() {
+  const db = load();
+  const demo = getDemoData();
+  const byPhone = new Map();
+  [...demo.customers, ...db.customers].forEach((c) => {
+    const entry = byPhone.get(c.phone) || { ids: [], rep: null };
+    entry.ids.push(c.id);
+    entry.rep = c; // later wins, so real customers override demo ones
+    byPhone.set(c.phone, entry);
+  });
+  const orders = [...db.orders, ...demo.orders];
+  return [...byPhone.values()]
+    .map(({ ids, rep }) => {
+      const theirs = orders.filter((o) => ids.includes(o.customer_id));
+      const last = theirs.reduce((m, o) => (o.created_at > m ? o.created_at : m), '');
+      return {
+        ...rep, ids,
+        order_count: theirs.length,
+        last_order_at: last || null,
+        total_spent: theirs.filter((o) => o.status !== 'rejected').reduce((t, o) => t + o.total, 0),
+      };
+    })
+    .sort((a, b) => (b.last_order_at || '').localeCompare(a.last_order_at || ''));
+}
+
+export function listOrdersForPhone(phone) {
+  const db = load();
+  const demo = getDemoData();
+  const ids = [...db.customers, ...demo.customers]
+    .filter((c) => c.phone === phone)
+    .map((c) => c.id);
+  return [...db.orders, ...demo.orders]
+    .filter((o) => ids.includes(o.customer_id))
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .map((o) => hydrate(db, o));
+}
+
 // ---- orders ----
 export function createOrder({ customer, items, jain, freeFromNote, fulfilment }) {
   // customer: {first_name,last_name,phone,customer_type,tower,wing,apartment,full_address}

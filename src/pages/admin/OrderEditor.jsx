@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { listMenu, createOrder, updateOrderContents, formatAddress, TOWERS } from '../../lib/store.js';
+import { listMenu, createOrder, updateOrderContents, formatAddress, listCustomers, TOWERS } from '../../lib/store.js';
 import Qty from '../../components/Qty.jsx';
 import { FaXmark, FaMagnifyingGlass } from 'react-icons/fa6';
 
@@ -13,6 +13,7 @@ export default function OrderEditor({ order, onClose }) {
       }))
     : []));
   const [q, setQ] = useState('');
+  const [custQ, setCustQ] = useState('');
   const [form, setForm] = useState(() => ({
     first_name: '', last_name: '', phone: '',
     customer_type: 'lodha', tower: TOWERS[0], wing: 'A', apartment: '', full_address: '',
@@ -31,6 +32,24 @@ export default function OrderEditor({ order, onClose }) {
       document.body.style.overflow = '';
     };
   }, [onClose]);
+
+  const custNeedle = custQ.trim().toLowerCase();
+  const custResults = custNeedle
+    ? listCustomers().filter((c) => `${c.first_name} ${c.last_name}`.toLowerCase().includes(custNeedle)
+        || (c.phone || '').includes(custNeedle)).slice(0, 5)
+    : [];
+  const pickCustomer = (c) => {
+    setForm((f) => ({
+      ...f,
+      first_name: c.first_name || '', last_name: c.last_name || '', phone: c.phone || '',
+      customer_type: c.customer_type || 'lodha',
+      tower: c.tower || TOWERS[0], wing: c.wing || 'A', apartment: c.apartment || '',
+      full_address: c.full_address || '',
+      jain: !!c.jain_default,
+    }));
+    setCustQ('');
+    setError('');
+  };
 
   const needle = q.trim().toLowerCase();
   const results = needle
@@ -109,6 +128,27 @@ export default function OrderEditor({ order, onClose }) {
               {order.customer.first_name} {order.customer.last_name} · {order.customer.phone}
               {order.fulfilment !== 'pickup' && ` · ${formatAddress(order.customer)}`}
             </p>
+          )}
+
+          {!isEdit && (
+            <div className="field">
+              <span className="field-label">Customer</span>
+              <div className="search-box oe-search">
+                <FaMagnifyingGlass />
+                <input value={custQ} onChange={(e) => setCustQ(e.target.value)}
+                       placeholder="Search existing customers..." />
+              </div>
+              {custResults.length > 0 && (
+                <div className="oe-results">
+                  {custResults.map((c) => (
+                    <button key={c.phone} type="button" onClick={() => pickCustomer(c)}>
+                      <span>{c.first_name} {c.last_name}{c.jain_default ? ' · Jain' : ''}</span>
+                      <span className="muted">{c.phone}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
 
           <div className="field">

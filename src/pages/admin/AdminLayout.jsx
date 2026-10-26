@@ -48,6 +48,10 @@ export default function AdminLayout() {
                      className={({ isActive }) => `side-link ${isActive ? 'on' : ''}`}>
               <span>Menu</span>
             </NavLink>
+            <NavLink to="/customers" onClick={close}
+                     className={({ isActive }) => `side-link ${isActive ? 'on' : ''}`}>
+              <span>Customers</span>
+            </NavLink>
             <NavLink to="/demo" onClick={close} className="side-link">
               <span>Customer demo ↗</span>
             </NavLink>

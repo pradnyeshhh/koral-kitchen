@@ -6,6 +6,7 @@ import Confirmation from './pages/Confirmation.jsx';
 import AdminLayout from './pages/admin/AdminLayout.jsx';
 import Orders from './pages/admin/Orders.jsx';
 import MenuManager from './pages/admin/MenuManager.jsx';
+import Customers from './pages/admin/Customers.jsx';
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route index element={<Orders />} />
           <Route path="orders/:status" element={<Orders />} />
           <Route path="menu" element={<MenuManager />} />
+          <Route path="customers" element={<Customers />} />
         </Route>
         {/* customer-facing demo */}
         <Route path="/demo" element={<Menu />} />
