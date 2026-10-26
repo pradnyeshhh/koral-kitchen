@@ -602,3 +602,51 @@ a { color: var(--primary); }
   @keyframes sheet { from { transform: translateY(45%); opacity: .4; } }
   .modal > img, .modal-img-ph { height: 225px; }
 }
+
+/* ---------- admin: search + filters ---------- */
+.orders-tools { display: flex; gap: 10px; align-items: center; margin: -6px 0 16px; }
+.search-box {
+  flex: 1; max-width: 340px;
+  display: flex; align-items: center; gap: 9px;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: 11px;
+  padding: 0 12px; color: var(--muted);
+}
+.search-box svg { font-size: 13px; flex: 0 0 auto; }
+.search-box input { border: none; margin: 0; padding: 10px 0; background: none; }
+.search-box input:focus { box-shadow: none; }
+.search-box:focus-within { border-color: var(--primary-bright); }
+.tool-chip {
+  padding: 9px 14px; border-radius: 11px;
+  background: var(--card); border: 1.5px solid var(--line);
+  font-size: 13px; font-weight: 600; color: #4f5a53;
+}
+.tool-chip.on { background: var(--saffron-soft); color: var(--primary); border-color: var(--primary); }
+
+/* ---------- admin: timeline + reject ---------- */
+.timeline { font-size: 12px; color: var(--muted); }
+.flag.rej { background: #f0f1f0; color: #434e47; border: 1px solid var(--line); font-weight: 600; }
+.reject-form { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.reject-form input { margin: 0; }
+.reject-actions { display: flex; gap: 10px; }
+.reject-actions .danger { flex: 1; }
+.plain {
+  border: 1px solid var(--line); border-radius: 11px; padding: 10px 18px;
+  background: #fff; font-weight: 600;
+}
+
+/* ---------- kitchen toggle + closed banner ---------- */
+.kitchen-toggle {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  color: #9aa69e; font-size: 13.5px; font-weight: 600;
+  padding: 9px 13px; margin: 0; white-space: nowrap;
+}
+.kitchen-toggle .switch { position: relative; }
+.closed-banner {
+  margin: 12px 18px 0; padding: 12px 15px;
+  background: var(--ink); color: #f2f8f4;
+  border-radius: 12px; font-size: 13px; font-weight: 550;
+}
+.checkout .closed-banner { margin: 0 0 14px; }
+@media (min-width: 760px) {
+  .page.customer .closed-banner { margin: 14px 0 0; }
+}
