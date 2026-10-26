@@ -238,6 +238,8 @@ a { color: var(--primary); }
 }
 .check input { width: 19px; height: 19px; margin: 1px 0 0; accent-color: var(--primary); flex: 0 0 auto; }
 
+.opt { font-weight: 450; color: var(--muted); }
+
 .error { color: var(--red); font-size: 13.5px; font-weight: 550; }
 
 .primary {

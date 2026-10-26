@@ -4,6 +4,13 @@ import { listMenu, createOrder, findCustomerByPhone, TOWERS } from '../lib/store
 import { useCart } from '../lib/cart.jsx';
 import Qty from '../components/Qty.jsx';
 
+function composeAddress(f) {
+  let a = `${f.flat_no.trim()}, ${f.building.trim()}, ${f.street.trim()}`;
+  if (f.landmark.trim()) a += `, ${f.landmark.trim()}`;
+  if (f.pincode.trim()) a += ` \u2013 ${f.pincode.trim()}`;
+  return a;
+}
+
 export default function Checkout() {
   const cart = useCart();
   const navigate = useNavigate();
@@ -11,7 +18,8 @@ export default function Checkout() {
   const [form, setForm] = useState({
     first_name: '', last_name: '', phone: '',
     customer_type: 'lodha', tower: TOWERS[0], wing: 'A', apartment: '',
-    full_address: '', jain: false, free_from_note: '',
+    flat_no: '', building: '', street: '', landmark: '', pincode: '',
+    jain: false, free_from_note: '',
   });
   const [error, setError] = useState('');
 
@@ -23,6 +31,7 @@ export default function Checkout() {
 
   const set = (k) => (e) => {
     const v = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setError('');
     setForm((f) => ({ ...f, [k]: v }));
   };
 
@@ -38,7 +47,11 @@ export default function Checkout() {
       tower: c.tower || f.tower,
       wing: c.wing || f.wing,
       apartment: c.apartment || f.apartment,
-      full_address: c.full_address || f.full_address,
+      flat_no: c.flat_no || f.flat_no,
+      building: c.building || f.building,
+      street: c.street || f.street,
+      landmark: c.landmark || f.landmark,
+      pincode: c.pincode || f.pincode,
       jain: f.jain || !!c.jain_default,
     }));
   };
@@ -49,7 +62,12 @@ export default function Checkout() {
     if (!form.first_name.trim() || !form.last_name.trim()) { setError('Please enter your name.'); return; }
     if (!/^\d{10}$/.test(form.phone.replace(/\D/g, '').slice(-10))) { setError('Please enter a 10-digit phone number.'); return; }
     if (form.customer_type === 'lodha' && !/^\d{1,4}$/.test(form.apartment)) { setError('Apartment number should be up to 4 digits.'); return; }
-    if (form.customer_type === 'other' && !form.full_address.trim()) { setError('Please enter your address.'); return; }
+    if (form.customer_type === 'other') {
+      if (!form.flat_no.trim() || !form.building.trim() || !form.street.trim()) {
+        setError('Please fill flat no., building and street / area.'); return;
+      }
+      if (form.pincode && !/^\d{6}$/.test(form.pincode)) { setError('Pincode should be 6 digits.'); return; }
+    }
 
     const order = createOrder({
       customer: {
@@ -60,7 +78,12 @@ export default function Checkout() {
         tower: form.customer_type === 'lodha' ? form.tower : null,
         wing: form.customer_type === 'lodha' ? form.wing : null,
         apartment: form.customer_type === 'lodha' ? form.apartment : null,
-        full_address: form.customer_type === 'other' ? form.full_address.trim() : null,
+        flat_no: form.customer_type === 'other' ? form.flat_no.trim() : null,
+        building: form.customer_type === 'other' ? form.building.trim() : null,
+        street: form.customer_type === 'other' ? form.street.trim() : null,
+        landmark: form.customer_type === 'other' ? form.landmark.trim() : null,
+        pincode: form.customer_type === 'other' ? form.pincode.trim() : null,
+        full_address: form.customer_type === 'other' ? composeAddress(form) : null,
       },
       items: lines.map((l) => ({ menu_item_id: l.id, quantity: l.qty })),
       jain: form.jain,
@@ -131,15 +154,35 @@ export default function Checkout() {
               </label>
               <label>Apartment
                 <input inputMode="numeric" maxLength={4} value={form.apartment}
-                       onChange={(e) => setForm((f) => ({ ...f, apartment: e.target.value.replace(/\D/g, '') }))}
+                       onChange={(e) => { setError(''); setForm((f) => ({ ...f, apartment: e.target.value.replace(/\D/g, '') })); }}
                        placeholder="e.g. 1204" />
               </label>
             </div>
           ) : (
-            <label>Full address
-              <textarea rows={3} value={form.full_address} onChange={set('full_address')}
-                        placeholder="Flat, building, street, area…" />
-            </label>
+            <>
+              <div className="row2">
+                <label>Flat / house no.
+                  <input value={form.flat_no} onChange={set('flat_no')} placeholder="e.g. 702" />
+                </label>
+                <label>Building / society
+                  <input value={form.building} onChange={set('building')} placeholder="e.g. Sea Breeze CHS" />
+                </label>
+              </div>
+              <label>Street / area
+                <input value={form.street} onChange={set('street')}
+                       placeholder="e.g. Senapati Bapat Marg, Lower Parel" />
+              </label>
+              <div className="row2">
+                <label>Landmark <span className="opt">(optional)</span>
+                  <input value={form.landmark} onChange={set('landmark')} placeholder="e.g. near Blue Tokai" />
+                </label>
+                <label>Pincode <span className="opt">(optional)</span>
+                  <input inputMode="numeric" maxLength={6} value={form.pincode}
+                         onChange={(e) => { setError(''); setForm((f) => ({ ...f, pincode: e.target.value.replace(/\D/g, '') })); }}
+                         placeholder="e.g. 400013" />
+                </label>
+              </div>
+            </>
           )}
 
           <h2 className="card-title">Kitchen notes</h2>
