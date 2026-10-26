@@ -650,3 +650,16 @@ a { color: var(--primary); }
 @media (min-width: 760px) {
   .page.customer .closed-banner { margin: 14px 0 0; }
 }
+
+/* ---------- customer menu search ---------- */
+.menu-search { padding: 12px 18px 0; }
+.menu-search .search-box { max-width: none; }
+.search-clear {
+  display: flex; padding: 6px; margin-right: -4px;
+  color: var(--muted); font-size: 14px;
+}
+.no-results { text-align: center; margin: 44px 0; }
+@media (min-width: 760px) {
+  .menu-search { padding: 14px 0 0; display: flex; justify-content: center; }
+  .menu-search .search-box { width: 420px; }
+}

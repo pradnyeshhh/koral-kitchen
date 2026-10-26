@@ -5,25 +5,33 @@ import { CATEGORIES } from '../data/seed.js';
 import { useCart } from '../lib/cart.jsx';
 import VegMark from '../components/VegMark.jsx';
 import DishModal from '../components/DishModal.jsx';
-import { FaInstagram, FaXmark } from 'react-icons/fa6';
+import { FaInstagram, FaXmark, FaMagnifyingGlass } from 'react-icons/fa6';
 import Qty from '../components/Qty.jsx';
 
 export default function Menu() {
   const [menu, setMenu] = useState(() => listMenu({ availableOnly: true }));
   const [settings, setSettings] = useState(getSettings);
   const [filter, setFilter] = useState(null);
+  const [q, setQ] = useState('');
   const [detail, setDetail] = useState(null);
   const cart = useCart();
   const navigate = useNavigate();
 
   useEffect(() => onChange(() => { setMenu(listMenu({ availableOnly: true })); setSettings(getSettings()); }), []);
 
+  const needle = q.trim().toLowerCase();
   const byCategory = useMemo(() => {
     const groups = {};
     CATEGORIES.forEach((c) => { groups[c] = []; });
-    menu.forEach((m) => { (groups[m.category] || (groups[m.category] = [])).push(m); });
+    menu
+      .filter((m) => !needle
+        || m.name.toLowerCase().includes(needle)
+        || (m.description || '').toLowerCase().includes(needle)
+        || (m.category || '').toLowerCase().includes(needle))
+      .forEach((m) => { (groups[m.category] || (groups[m.category] = [])).push(m); });
     return groups;
-  }, [menu]);
+  }, [menu, needle]);
+  const anyShown = CATEGORIES.some((c) => byCategory[c]?.length && (!filter || filter === c));
 
   const cartTotal = useMemo(() => {
     let t = 0;
@@ -54,6 +62,19 @@ export default function Menu() {
         </div>
       )}
 
+      <div className="menu-search">
+        <div className="search-box">
+          <FaMagnifyingGlass />
+          <input value={q} onChange={(e) => setQ(e.target.value)}
+                 placeholder="Search dishes" />
+          {q && (
+            <button aria-label="Clear search" className="search-clear" onClick={() => setQ('')}>
+              <FaXmark />
+            </button>
+          )}
+        </div>
+      </div>
+
       <nav className="chips">
         {CATEGORIES.map((c) => (
           byCategory[c]?.length ? (
@@ -66,6 +87,9 @@ export default function Menu() {
       </nav>
 
       <main className="menu-list">
+        {!anyShown && (
+          <p className="muted no-results">Nothing matches &ldquo;{q}&rdquo;. Try another dish.</p>
+        )}
         {CATEGORIES.filter((c) => !filter || filter === c).map((c) => (
           byCategory[c]?.length ? (
             <section key={c} className="menu-section">
