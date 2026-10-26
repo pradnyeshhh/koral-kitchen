@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { listMenu, createMenuItem, updateMenuItem, deleteMenuItem, onChange } from '../../lib/store.js';
 import { CATEGORIES } from '../../data/seed.js';
+import ImageDrop from '../../components/ImageDrop.jsx';
 
 const EMPTY = { name: '', description: '', price: '', photo: '', category: CATEGORIES[0], available: true };
 
@@ -71,13 +72,14 @@ function ItemForm({ initial, onSave, onCancel }) {
         <label>Price (₹)<input inputMode="numeric" value={f.price} onChange={set('price')} /></label>
       </div>
       <label>Description<textarea rows={2} value={f.description} onChange={set('description')} /></label>
-      <div className="row2">
-        <label>Category
-          <select value={f.category} onChange={set('category')}>
-            {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-          </select>
-        </label>
-        <label>Photo URL<input value={f.photo} onChange={set('photo')} placeholder="/images/… or https://…" /></label>
+      <label>Category
+        <select value={f.category} onChange={set('category')}>
+          {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+        </select>
+      </label>
+      <div className="field">
+        <span className="field-label">Photo</span>
+        <ImageDrop value={f.photo} onChange={(photo) => setF((x) => ({ ...x, photo }))} />
       </div>
       <label className="check">
         <input type="checkbox" checked={f.available}

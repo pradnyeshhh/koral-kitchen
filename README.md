@@ -16,26 +16,28 @@ npm run dev
 
 Then open the printed URL (usually http://localhost:5173).
 
-- **Customer site:** `/`. Mobile-first; open it in a phone-sized window or device emulation.
-- **Admin dashboard:** `/admin`. Pipeline sidebar (Open → Accepted → Ready to deliver → Completed), order cards with WhatsApp chat buttons.
-- **Menu management:** `/admin/menu`. Add, edit, delete, availability toggle.
+- **Admin dashboard (main app):** `/`. Pipeline sidebar (Open → Accepted → Ready to deliver → Completed), order cards with WhatsApp chat buttons.
+- **Menu management:** `/menu`. Add, edit, delete, availability toggle, drag-and-drop photos.
+- **Customer demo:** `/demo`. Mobile-first; open it in a phone-sized window or device emulation. This is the page customers would get as a WhatsApp link.
 
 `npm run build` produces a static bundle in `dist/` you can host anywhere.
 
 ## Try the whole flow
 
-1. On `/`, add a few dishes, tap the cart bar, fill the one-step checkout (Lodha Park
-   is the default customer type; tick **Jain preparation** and add a free-from note),
-   and place the order.
-2. Open `/admin`: the order is in **Open** with the Jain flag and note on the card.
+1. On `/demo`, add a few dishes (on a laptop, clicking a card opens a detail view
+   with a per-item customisation note), tap the cart bar, fill the one-step checkout
+   (Lodha Park is the default customer type; tick **Jain preparation** and add a
+   free-from note), and place the order.
+2. Open `/`: the order is in **Open** with the Jain flag and notes on the card.
    If both tabs are open, it appears without even refreshing.
 3. **Accept** it, then **Mark ready**, then **Mark completed**.
-4. On `/admin/menu`, toggle an item unavailable or edit its price, and the customer
+4. On `/menu`, toggle an item unavailable or edit its price, and the customer
    menu updates immediately.
 
 ## What was chosen and why
 
-- **React only (Vite), no backend.** Per the demo brief. Data lives in
+- **React only (Vite), no backend.** Styling is hand-rolled CSS with Tailwind
+  utilities available for new components; icons come from react-icons. Per the demo brief. Data lives in
   `localStorage`, behind a small data layer (`src/lib/store.js`) whose tables mirror
   the real schema (`customers`, `menu_items`, `orders`, `order_items`), including
   the nullable future columns (`payment_method`, `paid`, `paid_at`, `rider_id`).
@@ -44,6 +46,9 @@ Then open the printed URL (usually http://localhost:5173).
   one file, not the UI.
 - **Repeat customers** are recognised by phone number: type a known number at
   checkout and the address fields prefill.
+- **Menu photos** are added by drag-and-drop (or click to browse); the image is
+  resized client-side and stored as a data URL, which is enough for the demo and
+  becomes a normal file upload once there is an API.
 - **No auth**, all pages reachable by URL. The admin routes are already separated
   under `/admin`, so a login guard can wrap that route group later.
 - **Clean URLs** (`/admin`, no `#`). The dev server handles this out of the box;

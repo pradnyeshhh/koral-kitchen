@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import VegMark from './VegMark.jsx';
 import Qty from './Qty.jsx';
 import { useCart } from '../lib/cart.jsx';
+import { FaXmark } from 'react-icons/fa6';
 
 export default function DishModal({ item, onClose }) {
   const cart = useCart();
@@ -24,7 +25,7 @@ export default function DishModal({ item, onClose }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" role="dialog" aria-modal="true" aria-label={item.name}
            onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" aria-label="Close" onClick={onClose}>×</button>
+        <button className="modal-close" aria-label="Close" onClick={onClose}><FaXmark /></button>
         {item.photo
           ? <img src={item.photo} alt={item.name} />
           : <div className="modal-img-ph" />}
@@ -33,11 +34,16 @@ export default function DishModal({ item, onClose }) {
           <h3>{item.name}</h3>
           <div className="modal-price">₹{item.price}</div>
           <p>{item.description}</p>
+          <label className="modal-note">Any customisation? <span className="opt">(optional)</span>
+            <input value={cart.notes[item.id] || ''}
+                   onChange={(e) => cart.setNote(item.id, e.target.value)}
+                   placeholder='e.g. "less spicy", "no onion"' />
+          </label>
           <div className="modal-foot">
             {qty > 0 ? (
               <>
                 <Qty value={qty} onChange={(q) => cart.setQty(item.id, q)} />
-                <button className="primary" onClick={() => navigate('/checkout')}>
+                <button className="primary" onClick={() => navigate('/demo/checkout')}>
                   View cart →
                 </button>
               </>

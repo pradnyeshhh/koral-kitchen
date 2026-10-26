@@ -101,17 +101,17 @@ function upsertCustomer(db, c) {
 // ---- orders ----
 export function createOrder({ customer, items, jain, freeFromNote }) {
   // customer: {first_name,last_name,phone,customer_type,tower,wing,apartment,full_address}
-  // items: [{ menu_item_id, quantity }]
+  // items: [{ menu_item_id, quantity, note }]
   const db = load();
   const cust = upsertCustomer(db, { ...customer, jain_default: !!jain });
   let total = 0;
   const orderId = nextId(db);
-  items.forEach(({ menu_item_id, quantity }) => {
+  items.forEach(({ menu_item_id, quantity, note }) => {
     const m = db.menu_items.find((x) => x.id === menu_item_id);
     if (!m || quantity < 1) return;
     db.order_items.push({
       id: nextId(db), order_id: orderId, menu_item_id,
-      quantity, unit_price: m.price,
+      quantity, unit_price: m.price, note: (note || '').trim() || null,
     });
     total += m.price * quantity;
   });

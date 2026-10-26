@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { listOrders, setOrderStatus, onChange, formatAddress } from '../../lib/store.js';
 import { STAGES } from './AdminLayout.jsx';
+import { FaWhatsapp } from 'react-icons/fa6';
 
 const NEXT = { accepted: ['ready', 'Mark ready'], ready: ['completed', 'Mark completed'] };
 
@@ -47,7 +48,7 @@ function OrderCard({ order: o }) {
       <div className="order-addr">{formatAddress(c)}</div>
       <div className="order-phone">
         <span>{c.phone}</span>
-        <a className="wa-btn" href={wa} target="_blank" rel="noreferrer">WhatsApp</a>
+        <a className="wa-btn" href={wa} target="_blank" rel="noreferrer"><FaWhatsapp /> WhatsApp</a>
       </div>
 
       {(o.jain || o.free_from_note) && (
@@ -59,7 +60,13 @@ function OrderCard({ order: o }) {
 
       <ul className="order-items">
         {o.items.map((i) => (
-          <li key={i.id}><span>{i.quantity} × {i.name}</span><span>₹{i.quantity * i.unit_price}</span></li>
+          <li key={i.id}>
+            <span>
+              {i.quantity} × {i.name}
+              {i.note && <span className="item-note">↳ {i.note}</span>}
+            </span>
+            <span>₹{i.quantity * i.unit_price}</span>
+          </li>
         ))}
       </ul>
 

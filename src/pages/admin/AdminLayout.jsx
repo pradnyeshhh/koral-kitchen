@@ -20,18 +20,18 @@ export default function AdminLayout() {
         <div className="admin-brand">K&rsquo;s Kitchen <span>admin</span></div>
         <nav>
           {STAGES.map((s, i) => (
-            <NavLink key={s.key} to={i === 0 ? '/admin' : `/admin/orders/${s.key}`} end
+            <NavLink key={s.key} to={i === 0 ? '/' : `/orders/${s.key}`} end
                      className={({ isActive }) => `side-link ${isActive ? 'on' : ''}`}>
               <span>{s.label}</span>
               <span className="count">{counts[s.key] || 0}</span>
             </NavLink>
           ))}
           <div className="side-sep" />
-          <NavLink to="/admin/menu" className={({ isActive }) => `side-link ${isActive ? 'on' : ''}`}>
+          <NavLink to="/menu" className={({ isActive }) => `side-link ${isActive ? 'on' : ''}`}>
             <span>Menu</span>
           </NavLink>
-          <NavLink to="/" className="side-link">
-            <span>Customer site ↗</span>
+          <NavLink to="/demo" className="side-link">
+            <span>Customer demo ↗</span>
           </NavLink>
         </nav>
       </aside>

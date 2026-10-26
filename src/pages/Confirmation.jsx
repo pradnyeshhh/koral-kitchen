@@ -23,7 +23,7 @@ export default function Confirmation() {
           </>
         ) : <p className="muted">Order not found.</p>}
         <p>The chef will confirm your order on <strong>WhatsApp</strong> shortly.</p>
-        <Link to="/" className="primary as-link">Back to menu</Link>
+        <Link to="/demo" className="primary as-link">Back to menu</Link>
       </main>
     </div>
   );

@@ -11,14 +11,16 @@ export default function App() {
   return (
     <CartProvider>
       <Routes>
-        <Route path="/" element={<Menu />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/confirmation/:orderId" element={<Confirmation />} />
-        <Route path="/admin" element={<AdminLayout />}>
+        {/* admin dashboard is the main app */}
+        <Route path="/" element={<AdminLayout />}>
           <Route index element={<Orders />} />
           <Route path="orders/:status" element={<Orders />} />
           <Route path="menu" element={<MenuManager />} />
         </Route>
+        {/* customer-facing demo */}
+        <Route path="/demo" element={<Menu />} />
+        <Route path="/demo/checkout" element={<Checkout />} />
+        <Route path="/demo/confirmation/:orderId" element={<Confirmation />} />
       </Routes>
     </CartProvider>
   );

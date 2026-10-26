@@ -3,11 +3,13 @@ import { createContext, useContext, useMemo, useState } from 'react';
 const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
-  // { [menuItemId]: quantity }
+  // { [menuItemId]: quantity } and { [menuItemId]: customisation note }
   const [items, setItems] = useState({});
+  const [notes, setNotes] = useState({});
 
   const api = useMemo(() => ({
     items,
+    notes,
     count: Object.values(items).reduce((a, b) => a + b, 0),
     add(id) {
       setItems((s) => ({ ...s, [id]: (s[id] || 0) + 1 }));
@@ -19,9 +21,13 @@ export function CartProvider({ children }) {
         else next[id] = qty;
         return next;
       });
+      if (qty <= 0) setNotes((n) => { const next = { ...n }; delete next[id]; return next; });
     },
-    clear() { setItems({}); },
-  }), [items]);
+    setNote(id, text) {
+      setNotes((n) => ({ ...n, [id]: text }));
+    },
+    clear() { setItems({}); setNotes({}); },
+  }), [items, notes]);
 
   return <CartContext.Provider value={api}>{children}</CartContext.Provider>;
 }

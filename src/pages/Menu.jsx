@@ -5,6 +5,7 @@ import { CATEGORIES } from '../data/seed.js';
 import { useCart } from '../lib/cart.jsx';
 import VegMark from '../components/VegMark.jsx';
 import DishModal from '../components/DishModal.jsx';
+import { FaInstagram } from 'react-icons/fa6';
 import Qty from '../components/Qty.jsx';
 
 export default function Menu() {
@@ -113,7 +114,7 @@ export default function Menu() {
         ))}
         <footer className="site-footer">
           <a href="https://www.instagram.com/kskitchen_by_koral_/" target="_blank" rel="noreferrer">
-            @kskitchen_by_koral_
+            <FaInstagram /> @kskitchen_by_koral_
           </a>
           <div>We confirm every order on WhatsApp.</div>
         </footer>
@@ -122,7 +123,7 @@ export default function Menu() {
       {detail && <DishModal item={detail} onClose={() => setDetail(null)} />}
 
       {cart.count > 0 && (
-        <button className="cart-bar" onClick={() => navigate('/checkout')}>
+        <button className="cart-bar" onClick={() => navigate('/demo/checkout')}>
           <span>{cart.count} item{cart.count > 1 ? 's' : ''} · ₹{cartTotal}</span>
           <span className="cart-bar-cta">View cart →</span>
         </button>

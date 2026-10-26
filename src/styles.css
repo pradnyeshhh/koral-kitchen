@@ -1,3 +1,6 @@
+@import "tailwindcss/theme.css";
+@import "tailwindcss/utilities.css";
+
 /* ---------- design tokens ---------- */
 :root {
   --bg: #f7f2e9;
@@ -511,3 +514,22 @@ a { color: var(--primary); }
 .modal-foot .qty { margin: 0; flex: 0 0 auto; }
 .modal-foot .qty button { padding: 10px 15px; }
 .modal-foot .primary { margin: 0; flex: 1; }
+
+/* ---------- per-item customisation notes ---------- */
+.line-note { font-size: 13px; padding: 8px 11px; margin: 2px 0 10px; }
+.add-note {
+  display: block; font-size: 12px; font-weight: 700; color: var(--primary);
+  padding: 0; margin: -4px 0 10px;
+}
+.modal-note { margin: 16px 0 0; }
+.item-note { display: block; font-size: 12px; font-weight: 600; color: #9c540d; }
+
+/* icon alignment + form field heading */
+.wa-btn { display: inline-flex; align-items: center; gap: 6px; }
+.site-footer a { display: inline-flex; align-items: center; gap: 7px; }
+.modal-close svg { display: block; }
+.field { margin-bottom: 12px; }
+.field-label {
+  display: block; font-size: 12.5px; font-weight: 600; color: #6d6253;
+  letter-spacing: .1px; margin-bottom: 6px;
+}

@@ -22,6 +22,7 @@ export default function Checkout() {
     jain: false, free_from_note: '',
   });
   const [error, setError] = useState('');
+  const [noteOpen, setNoteOpen] = useState({});
 
   const lines = useMemo(
     () => menu.filter((m) => cart.items[m.id]).map((m) => ({ ...m, qty: cart.items[m.id] })),
@@ -85,30 +86,42 @@ export default function Checkout() {
         pincode: form.customer_type === 'other' ? form.pincode.trim() : null,
         full_address: form.customer_type === 'other' ? composeAddress(form) : null,
       },
-      items: lines.map((l) => ({ menu_item_id: l.id, quantity: l.qty })),
+      items: lines.map((l) => ({ menu_item_id: l.id, quantity: l.qty, note: cart.notes[l.id] || '' })),
       jain: form.jain,
       freeFromNote: form.free_from_note,
     });
     cart.clear();
-    navigate(`/confirmation/${order.id}`);
+    navigate(`/demo/confirmation/${order.id}`);
   };
 
   return (
     <div className="page customer">
       <header className="sub-header">
-        <Link to="/" className="back">←</Link>
+        <Link to="/demo" className="back">←</Link>
         <h1>Your order</h1>
       </header>
 
       <main className="checkout">
         <section className="card">
           <h2 className="card-title">Items</h2>
-          {lines.length === 0 && <p className="muted">Cart is empty. <Link to="/">Back to menu</Link></p>}
+          {lines.length === 0 && <p className="muted">Cart is empty. <Link to="/demo">Back to menu</Link></p>}
           {lines.map((l) => (
-            <div key={l.id} className="cart-line">
-              <div className="cart-line-name">{l.name}</div>
-              <Qty value={l.qty} onChange={(q) => cart.setQty(l.id, q)} />
-              <div className="cart-line-price">₹{l.qty * l.price}</div>
+            <div key={l.id} className="cart-line-wrap">
+              <div className="cart-line">
+                <div className="cart-line-name">{l.name}</div>
+                <Qty value={l.qty} onChange={(q) => cart.setQty(l.id, q)} />
+                <div className="cart-line-price">₹{l.qty * l.price}</div>
+              </div>
+              {(noteOpen[l.id] || cart.notes[l.id]) ? (
+                <input className="line-note" value={cart.notes[l.id] || ''}
+                       onChange={(e) => cart.setNote(l.id, e.target.value)}
+                       placeholder='e.g. "less spicy", "no onion"' />
+              ) : (
+                <button type="button" className="add-note"
+                        onClick={() => setNoteOpen((s2) => ({ ...s2, [l.id]: true }))}>
+                  + Add note
+                </button>
+              )}
             </div>
           ))}
           {lines.length > 0 && (
