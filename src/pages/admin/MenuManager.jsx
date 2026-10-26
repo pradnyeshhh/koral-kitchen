@@ -1,28 +1,30 @@
 import { useEffect, useState } from 'react';
 import {
   listMenu, createMenuItem, updateMenuItem, deleteMenuItem, onChange,
-  getCategoryOptions, setCategoryOptions,
+  getCategoryOptions, setCategoryOptions, listCategories,
 } from '../../lib/store.js';
-import { CATEGORIES } from '../../data/seed.js';
 import ImageDrop from '../../components/ImageDrop.jsx';
 import { FaMagnifyingGlass, FaXmark, FaChevronDown } from 'react-icons/fa6';
 
-const EMPTY = { name: '', description: '', price: '', photo: '', category: CATEGORIES[0], available: true };
+const EMPTY = { name: '', description: '', price: '', photo: '', category: '', available: true };
 
 export default function MenuManager() {
   const [menu, setMenu] = useState(listMenu);
   const [editing, setEditing] = useState(null); // null | 'new' | item id
   const [q, setQ] = useState('');
+  const [cat, setCat] = useState(null);
 
   useEffect(() => onChange(() => setMenu(listMenu())), []);
 
+  const cats = listCategories();
   const needle = q.trim().toLowerCase();
-  const shown = needle
-    ? menu.filter((m) =>
-        m.name.toLowerCase().includes(needle)
-        || (m.category || '').toLowerCase().includes(needle)
-        || (m.description || '').toLowerCase().includes(needle))
-    : menu;
+  const shown = menu.filter((m) => {
+    if (cat && m.category !== cat) return false;
+    if (!needle) return true;
+    return m.name.toLowerCase().includes(needle)
+      || (m.category || '').toLowerCase().includes(needle)
+      || (m.description || '').toLowerCase().includes(needle);
+  });
 
   const save = (form) => {
     if (editing === 'new') createMenuItem(form);
@@ -47,6 +49,15 @@ export default function MenuManager() {
           <input value={q} onChange={(e) => setQ(e.target.value)}
                  placeholder="Search dishes or categories" />
         </div>
+      </div>
+
+      <div className="cat-chips">
+        {cats.map((c) => (
+          <button key={c} className={`chip ${cat === c ? 'on' : ''}`}
+                  onClick={() => setCat(cat === c ? null : c)}>
+            {c}{cat === c && <FaXmark />}
+          </button>
+        ))}
       </div>
 
       <CategoryOptionsEditor />
@@ -107,7 +118,7 @@ function CategoryOptionsEditor() {
         <span>Quick customisations <span className="muted small">· what customers can pick per category</span></span>
         <FaChevronDown />
       </button>
-      {open && CATEGORIES.map((cat) => (
+      {open && listCategories().map((cat) => (
         <div key={cat} className="copt-row">
           <span className="field-label">{cat}</span>
           <div className="opt-chips">
@@ -133,22 +144,34 @@ function CategoryOptionsEditor() {
 }
 
 function ItemForm({ initial, onSave, onCancel }) {
-  const [f, setF] = useState({ ...EMPTY, ...initial });
+  const cats = listCategories();
+  const [f, setF] = useState({ ...EMPTY, category: cats[0] || '', ...initial });
+  const [newCat, setNewCat] = useState(false);
   const set = (k) => (e) => setF((s) => ({ ...s, [k]: e.target.value }));
-  const valid = f.name.trim() && Number(f.price) > 0;
+  const valid = f.name.trim() && Number(f.price) > 0 && f.category.trim();
 
   return (
-    <form className="card mi-form" onSubmit={(e) => { e.preventDefault(); if (valid) onSave(f); }}>
+    <form className="card mi-form" onSubmit={(e) => { e.preventDefault(); if (valid) onSave({ ...f, category: f.category.trim() }); }}>
       <div className="row2">
         <label>Name<input value={f.name} onChange={set('name')} /></label>
         <label>Price (₹)<input inputMode="numeric" value={f.price} onChange={set('price')} /></label>
       </div>
       <label>Description<textarea rows={2} value={f.description} onChange={set('description')} /></label>
       <label>Category
-        <select value={f.category} onChange={set('category')}>
-          {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+        <select value={newCat ? '__new' : f.category}
+                onChange={(e) => {
+                  if (e.target.value === '__new') { setNewCat(true); setF((s) => ({ ...s, category: '' })); }
+                  else { setNewCat(false); setF((s) => ({ ...s, category: e.target.value })); }
+                }}>
+          {cats.map((c) => <option key={c}>{c}</option>)}
+          <option value="__new">+ New category...</option>
         </select>
       </label>
+      {newCat && (
+        <label>New category name
+          <input autoFocus value={f.category} onChange={set('category')} placeholder="e.g. Beverages" />
+        </label>
+      )}
       <div className="field">
         <span className="field-label">Photo</span>
         <ImageDrop value={f.photo} onChange={(photo) => setF((x) => ({ ...x, photo }))} />

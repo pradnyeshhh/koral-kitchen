@@ -47,15 +47,17 @@ export default function DishModal({ item, onClose }) {
           <p>{item.description}</p>
           <div className="modal-note">
             <span className="field-label">Customise <span className="opt">(optional)</span></span>
-            <div className="opt-chips">
-              {quickOptions.map((o) => (
-                <button key={o} type="button"
-                        className={`opt-chip ${hasOpt(o) ? 'on' : ''}`}
-                        onClick={() => toggleOpt(o)}>
-                  {o}
-                </button>
-              ))}
-            </div>
+            {quickOptions.length > 0 && (
+              <div className="opt-chips">
+                {quickOptions.map((o) => (
+                  <button key={o} type="button"
+                          className={`opt-chip ${hasOpt(o) ? 'on' : ''}`}
+                          onClick={() => toggleOpt(o)}>
+                    {o}
+                  </button>
+                ))}
+              </div>
+            )}
             <input value={note}
                    onChange={(e) => cart.setNote(item.id, e.target.value)}
                    placeholder="Anything else for the chef?" />

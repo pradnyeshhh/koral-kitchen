@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { FaMagnifyingGlass, FaPen, FaPlus } from 'react-icons/fa6';
+import OrderEditor from './OrderEditor.jsx';
 import { listOrders, setOrderStatus, onChange, formatAddress } from '../../lib/store.js';
 import { STAGES } from './AdminLayout.jsx';
 
@@ -11,6 +12,7 @@ export default function Orders() {
   const [orders, setOrders] = useState(() => listOrders(status));
   const [q, setQ] = useState('');
   const [jainOnly, setJainOnly] = useState(false);
+  const [editing, setEditing] = useState(null); // null | 'new' | hydrated order
 
   useEffect(() => {
     setOrders(listOrders(status));
@@ -31,7 +33,10 @@ export default function Orders() {
 
   return (
     <div className="orders-page">
-      <h1>{label} <span className="muted">· {shown.length} order{shown.length === 1 ? '' : 's'}</span></h1>
+      <div className="page-head">
+        <h1>{label} <span className="muted">· {shown.length} order{shown.length === 1 ? '' : 's'}</span></h1>
+        <button className="primary" onClick={() => setEditing('new')}><FaPlus /> New order</button>
+      </div>
       <div className="orders-tools">
         <div className="search-box">
           <FaMagnifyingGlass />
@@ -45,8 +50,11 @@ export default function Orders() {
       </div>
       {shown.length === 0 && <p className="muted empty">Nothing here right now.</p>}
       <div className="order-grid">
-        {shown.map((o) => <OrderCard key={o.id} order={o} />)}
+        {shown.map((o) => <OrderCard key={o.id} order={o} onEdit={() => setEditing(o)} />)}
       </div>
+      {editing && (
+        <OrderEditor order={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />
+      )}
     </div>
   );
 }
@@ -68,7 +76,7 @@ function Timeline({ log }) {
   );
 }
 
-function OrderCard({ order: o }) {
+function OrderCard({ order: o, onEdit }) {
   const c = o.customer;
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState('');
@@ -83,7 +91,12 @@ function OrderCard({ order: o }) {
             day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit',
           })}</div>
         </div>
-        <div className="order-total">₹{o.total}</div>
+        <div className="order-head-right">
+          <div className="order-total">₹{o.total}</div>
+          <button className="icon-btn" aria-label="Edit order" title="Edit order" onClick={onEdit}>
+            <FaPen />
+          </button>
+        </div>
       </header>
 
       <div className="order-addr">

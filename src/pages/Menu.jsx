@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { listMenu, onChange } from '../lib/store.js';
-import { CATEGORIES } from '../data/seed.js';
 import { useCart } from '../lib/cart.jsx';
 import VegMark from '../components/VegMark.jsx';
 import DishModal from '../components/DishModal.jsx';
@@ -19,18 +18,22 @@ export default function Menu() {
   useEffect(() => onChange(() => setMenu(listMenu({ availableOnly: true }))), []);
 
   const needle = q.trim().toLowerCase();
-  const byCategory = useMemo(() => {
+  const { cats, byCategory } = useMemo(() => {
+    const order = [];
     const groups = {};
-    CATEGORIES.forEach((c) => { groups[c] = []; });
     menu
       .filter((m) => !needle
         || m.name.toLowerCase().includes(needle)
         || (m.description || '').toLowerCase().includes(needle)
         || (m.category || '').toLowerCase().includes(needle))
-      .forEach((m) => { (groups[m.category] || (groups[m.category] = [])).push(m); });
-    return groups;
+      .forEach((m) => {
+        const c = m.category || 'Other';
+        if (!groups[c]) { groups[c] = []; order.push(c); }
+        groups[c].push(m);
+      });
+    return { cats: order, byCategory: groups };
   }, [menu, needle]);
-  const anyShown = CATEGORIES.some((c) => byCategory[c]?.length && (!filter || filter === c));
+  const anyShown = cats.some((c) => byCategory[c]?.length && (!filter || filter === c));
 
   const cartTotal = useMemo(() => {
     let t = 0;
@@ -71,7 +74,7 @@ export default function Menu() {
       </div>
 
       <nav className="chips">
-        {CATEGORIES.map((c) => (
+        {cats.map((c) => (
           byCategory[c]?.length ? (
             <button key={c} className={`chip ${filter === c ? 'on' : ''}`}
                     onClick={() => setFilter(filter === c ? null : c)}>
@@ -85,7 +88,7 @@ export default function Menu() {
         {!anyShown && (
           <p className="muted no-results">Nothing matches &ldquo;{q}&rdquo;. Try another dish.</p>
         )}
-        {CATEGORIES.filter((c) => !filter || filter === c).map((c) => (
+        {cats.filter((c) => !filter || filter === c).map((c) => (
           byCategory[c]?.length ? (
             <section key={c} className="menu-section">
               <h2>{c}</h2>

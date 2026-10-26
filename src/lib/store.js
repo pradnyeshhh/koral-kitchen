@@ -44,6 +44,8 @@ function seedMenu(db) {
 
 function nextId(db) { return db.seq++; }
 
+let demoItemSeq = 95000; // ids for order items added to demo orders in this session
+
 // ---- demo overlay ----
 // Sample customers and orders shown alongside real data. They are rebuilt fresh
 // on every page load, so playing with their statuses resets on refresh, while
@@ -144,11 +146,19 @@ export function listMenu({ availableOnly = false } = {}) {
   return availableOnly ? items.filter((m) => m.available) : items;
 }
 
+export function listCategories() {
+  const cats = [];
+  load().menu_items.slice().sort((a, b) => a.id - b.id).forEach((m) => {
+    if (m.category && !cats.includes(m.category)) cats.push(m.category);
+  });
+  return cats;
+}
+
 export function createMenuItem({ name, description, price, photo, category, available }) {
   const db = load();
   const item = {
     id: nextId(db), name, description, price: Number(price), photo,
-    category: category || 'North Indian',
+    category: (category || '').trim() || 'Other',
     available: available !== false, created_at: new Date().toISOString(),
   };
   db.menu_items.push(item);
@@ -236,6 +246,48 @@ export function orderCounts() {
   const counts = { open: 0, accepted: 0, ready: 0, completed: 0, rejected: 0 };
   [...db.orders, ...getDemoData().orders].forEach((o) => { counts[o.status] = (counts[o.status] || 0) + 1; });
   return counts;
+}
+
+// Replace an order's items and details (status unchanged). Works on demo
+// orders in memory and on real orders in storage. Existing lines keep their
+// original unit price; newly added lines take the current menu price.
+export function updateOrderContents(orderId, { items, jain, freeFromNote, fulfilment }) {
+  const apply = (order, pool, makeId, persist) => {
+    const oldPrice = {};
+    pool.order_items
+      .filter((oi) => oi.order_id === orderId)
+      .forEach((oi) => { oldPrice[oi.menu_item_id] = oi.unit_price; });
+    pool.order_items = pool.order_items.filter((oi) => oi.order_id !== orderId);
+    const menu = load().menu_items;
+    let total = 0;
+    items.forEach(({ menu_item_id, quantity, note }) => {
+      if (quantity < 1) return;
+      const price = oldPrice[menu_item_id]
+        ?? (menu.find((m) => m.id === menu_item_id) || {}).price ?? 0;
+      pool.order_items.push({
+        id: makeId(), order_id: orderId, menu_item_id,
+        quantity, unit_price: price, note: (note || '').trim() || null,
+      });
+      total += price * quantity;
+    });
+    order.total = total;
+    order.jain = !!jain;
+    order.free_from_note = (freeFromNote || '').trim();
+    if (fulfilment) order.fulfilment = fulfilment === 'pickup' ? 'pickup' : 'delivery';
+    persist();
+    return order;
+  };
+
+  const demo = getDemoData();
+  const demoOrder = demo.orders.find((o) => o.id === orderId);
+  if (demoOrder) {
+    return apply(demoOrder, demo, () => demoItemSeq++,
+      () => window.dispatchEvent(new Event('kk-db-changed')));
+  }
+  const db = load();
+  const order = db.orders.find((o) => o.id === orderId);
+  if (!order) return null;
+  return apply(order, db, () => nextId(db), () => save(db));
 }
 
 export function setOrderStatus(id, status, { reason } = {}) {
