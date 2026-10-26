@@ -6,7 +6,7 @@ import { useCart } from '../lib/cart.jsx';
 import { getCategoryOptions } from '../lib/store.js';
 import { FaXmark } from 'react-icons/fa6';
 
-export default function DishModal({ item, onClose, closed, onBlocked }) {
+export default function DishModal({ item, onClose }) {
   const cart = useCart();
   const navigate = useNavigate();
 
@@ -64,8 +64,7 @@ export default function DishModal({ item, onClose, closed, onBlocked }) {
             {qty > 0 ? (
               <>
                 <Qty value={qty} onChange={(q) => cart.setQty(item.id, q)} />
-                <button className="primary"
-                        onClick={() => { if (closed) { onBlocked?.(); return; } navigate('/demo/checkout'); }}>
+                <button className="primary" onClick={() => navigate('/demo/checkout')}>
                   View cart →
                 </button>
               </>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { FaBars } from 'react-icons/fa6';
-import { orderCounts, onChange, getSettings, setKitchenOpen } from '../../lib/store.js';
+import { orderCounts, onChange } from '../../lib/store.js';
 
 export const STAGES = [
   { key: 'open', label: 'Open' },
@@ -13,10 +13,9 @@ export const STAGES = [
 
 export default function AdminLayout() {
   const [counts, setCounts] = useState(orderCounts);
-  const [settings, setSettings] = useState(getSettings);
   const [navOpen, setNavOpen] = useState(false);
 
-  useEffect(() => onChange(() => { setCounts(orderCounts()); setSettings(getSettings()); }), []);
+  useEffect(() => onChange(() => setCounts(orderCounts())), []);
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') setNavOpen(false); };
     window.addEventListener('keydown', onKey);
@@ -52,15 +51,6 @@ export default function AdminLayout() {
             <NavLink to="/demo" onClick={close} className="side-link">
               <span>Customer demo ↗</span>
             </NavLink>
-            <div className="side-sep" />
-            <label className="kitchen-toggle">
-              <span>{settings.kitchen_open ? 'Kitchen open' : 'Kitchen closed'}</span>
-              <span className="switch">
-                <input type="checkbox" checked={settings.kitchen_open}
-                       onChange={(e) => setKitchenOpen(e.target.checked)} />
-                <span />
-              </span>
-            </label>
           </nav>
         </div>
       </aside>

@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { listMenu, onChange, getSettings } from '../lib/store.js';
+import { listMenu, onChange } from '../lib/store.js';
 import { CATEGORIES } from '../data/seed.js';
 import { useCart } from '../lib/cart.jsx';
 import VegMark from '../components/VegMark.jsx';
@@ -10,24 +10,13 @@ import Qty from '../components/Qty.jsx';
 
 export default function Menu() {
   const [menu, setMenu] = useState(() => listMenu({ availableOnly: true }));
-  const [settings, setSettings] = useState(getSettings);
   const [filter, setFilter] = useState(null);
   const [q, setQ] = useState('');
   const [detail, setDetail] = useState(null);
-  const [toast, setToast] = useState('');
-  const toastTimer = useRef(null);
   const cart = useCart();
-
-  const showToast = (msg) => {
-    clearTimeout(toastTimer.current);
-    setToast(msg);
-    toastTimer.current = setTimeout(() => setToast(''), 2600);
-  };
-  const closed = !settings.kitchen_open;
-  const blockedToast = () => showToast('We\u2019re closed right now. Ordering reopens soon.');
   const navigate = useNavigate();
 
-  useEffect(() => onChange(() => { setMenu(listMenu({ availableOnly: true })); setSettings(getSettings()); }), []);
+  useEffect(() => onChange(() => setMenu(listMenu({ availableOnly: true }))), []);
 
   const needle = q.trim().toLowerCase();
   const byCategory = useMemo(() => {
@@ -60,20 +49,12 @@ export default function Menu() {
           </div>
         </div>
         <div className="hero-status">
-          <span className={`status-dot ${closed ? '' : 'live'}`} />
-          <span>{closed ? 'Closed right now' : 'Open now'}</span>
-          <span className="dot-sep">·</span>
+          <span className="status-dot live" />
           <span>Pure veg kitchen</span>
           <span className="dot-sep">·</span>
           <span>Delivery &amp; self pickup</span>
         </div>
       </header>
-
-      {!settings.kitchen_open && (
-        <div className="closed-banner">
-          We&rsquo;re closed right now. Browse the menu; ordering reopens soon.
-        </div>
-      )}
 
       <div className="menu-search">
         <div className="search-box">
@@ -141,14 +122,10 @@ export default function Menu() {
         </footer>
       </main>
 
-      {detail && <DishModal item={detail} onClose={() => setDetail(null)}
-                            closed={closed} onBlocked={blockedToast} />}
-
-      {toast && <div className="toast">{toast}</div>}
+      {detail && <DishModal item={detail} onClose={() => setDetail(null)} />}
 
       {cart.count > 0 && (
-        <button className="cart-bar"
-                onClick={() => { if (closed) { blockedToast(); return; } navigate('/demo/checkout'); }}>
+        <button className="cart-bar" onClick={() => navigate('/demo/checkout')}>
           <span>{cart.count} item{cart.count > 1 ? 's' : ''} · ₹{cartTotal}</span>
           <span className="cart-bar-cta">View cart →</span>
         </button>

@@ -9,7 +9,7 @@ const KEY = 'kk_db_v4';
 function blankDb() {
   return {
     customers: [], menu_items: [], orders: [], order_items: [],
-    settings: { kitchen_open: true, category_options: DEFAULT_CATEGORY_OPTIONS }, seq: 1,
+    settings: { category_options: DEFAULT_CATEGORY_OPTIONS }, seq: 1,
   };
 }
 
@@ -18,7 +18,7 @@ function load() {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const db = JSON.parse(raw);
-      if (!db.settings) db.settings = { kitchen_open: true };
+      if (!db.settings) db.settings = {};
       if (!db.settings.category_options) db.settings.category_options = DEFAULT_CATEGORY_OPTIONS;
       return db;
     }
@@ -234,10 +234,6 @@ export function setOrderStatus(id, status, { reason } = {}) {
 }
 
 // ---- kitchen settings ----
-export function getSettings() {
-  return load().settings;
-}
-
 export function getCategoryOptions(category) {
   const opts = load().settings.category_options || {};
   return opts[category] || [];
@@ -246,12 +242,6 @@ export function getCategoryOptions(category) {
 export function setCategoryOptions(category, options) {
   const db = load();
   db.settings.category_options = { ...(db.settings.category_options || {}), [category]: options };
-  save(db);
-}
-
-export function setKitchenOpen(open) {
-  const db = load();
-  db.settings = { ...db.settings, kitchen_open: !!open };
   save(db);
 }
 

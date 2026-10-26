@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { listMenu, createOrder, findCustomerByPhone, getSettings, onChange, TOWERS, SLOTS } from '../lib/store.js';
+import { listMenu, createOrder, findCustomerByPhone, TOWERS, SLOTS } from '../lib/store.js';
 import { useCart } from '../lib/cart.jsx';
 import Qty from '../components/Qty.jsx';
 
@@ -15,8 +15,6 @@ export default function Checkout() {
   const cart = useCart();
   const navigate = useNavigate();
   const menu = useMemo(() => listMenu(), []);
-  const [settings, setSettings] = useState(getSettings);
-  useEffect(() => onChange(() => setSettings(getSettings())), []);
   const [form, setForm] = useState({
     first_name: '', last_name: '', phone: '',
     customer_type: 'lodha', tower: TOWERS[0], wing: 'A', apartment: '',
@@ -62,7 +60,6 @@ export default function Checkout() {
 
   const placeOrder = (e) => {
     e.preventDefault();
-    if (!settings.kitchen_open) { setError('The kitchen is closed right now. Please order once it reopens.'); return; }
     if (!lines.length) { setError('Your cart is empty.'); return; }
     if (!form.first_name.trim() || !form.last_name.trim()) { setError('Please enter your name.'); return; }
     if (!/^\d{10}$/.test(form.phone.replace(/\D/g, '').slice(-10))) { setError('Please enter a 10-digit phone number.'); return; }
@@ -112,11 +109,6 @@ export default function Checkout() {
       </header>
 
       <main className="checkout">
-        {!settings.kitchen_open && (
-          <div className="closed-banner">
-            We&rsquo;re closed right now. You can fill everything in, but ordering reopens once the kitchen is back.
-          </div>
-        )}
         <section className="card">
           <h2 className="card-title">Items</h2>
           {lines.length === 0 && <p className="muted">Cart is empty. <Link to="/demo">Back to menu</Link></p>}
@@ -251,7 +243,7 @@ export default function Checkout() {
           </label>
 
           {error && <p className="error">{error}</p>}
-          <button type="submit" className="primary" disabled={!lines.length || !settings.kitchen_open}>
+          <button type="submit" className="primary" disabled={!lines.length}>
             Place order · ₹{total}
           </button>
         </form>
