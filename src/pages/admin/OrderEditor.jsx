@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { listMenu, createOrder, updateOrderContents, formatAddress, listCustomers, TOWERS } from '../../lib/store.js';
+import { composeAddress, addressParts } from '../../lib/address.js';
 import Qty from '../../components/Qty.jsx';
 import { FaXmark, FaMagnifyingGlass } from 'react-icons/fa6';
 
-export default function OrderEditor({ order, onClose }) {
+export default function OrderEditor({ order, customer: initialCustomer = null, onClose }) {
   const isEdit = !!order;
   const menu = useMemo(() => listMenu(), []);
   const [lines, setLines] = useState(() => (isEdit
@@ -15,10 +16,18 @@ export default function OrderEditor({ order, onClose }) {
   const [q, setQ] = useState('');
   const [custQ, setCustQ] = useState('');
   const [form, setForm] = useState(() => ({
-    first_name: '', last_name: '', phone: '',
-    customer_type: 'lodha', tower: TOWERS[0], wing: 'A', apartment: '', full_address: '',
+    first_name: initialCustomer?.first_name || '',
+    last_name: initialCustomer?.last_name || '',
+    phone: initialCustomer?.phone || '',
+    customer_type: initialCustomer?.customer_type || 'lodha',
+    tower: initialCustomer?.tower || TOWERS[0],
+    wing: initialCustomer?.wing || 'A',
+    apartment: initialCustomer?.apartment || '',
+    ...(initialCustomer
+      ? addressParts(initialCustomer)
+      : { flat_no: '', building: '', street: '', landmark: '', pincode: '' }),
     fulfilment: order?.fulfilment || 'delivery',
-    jain: order?.jain || false,
+    jain: order?.jain || !!initialCustomer?.jain_default,
     free_from_note: order?.free_from_note || '',
   }));
   const [error, setError] = useState('');
@@ -44,7 +53,7 @@ export default function OrderEditor({ order, onClose }) {
       first_name: c.first_name || '', last_name: c.last_name || '', phone: c.phone || '',
       customer_type: c.customer_type || 'lodha',
       tower: c.tower || TOWERS[0], wing: c.wing || 'A', apartment: c.apartment || '',
-      full_address: c.full_address || '',
+      ...addressParts(c),
       jain: !!c.jain_default,
     }));
     setCustQ('');
@@ -94,7 +103,12 @@ export default function OrderEditor({ order, onClose }) {
     if (!/^\d{10}$/.test(form.phone.replace(/\D/g, '').slice(-10))) { setError('Please enter a 10-digit phone number.'); return; }
     if (form.fulfilment === 'delivery') {
       if (form.customer_type === 'lodha' && !/^\d{1,4}$/.test(form.apartment)) { setError('Apartment number should be up to 4 digits.'); return; }
-      if (form.customer_type === 'other' && !form.full_address.trim()) { setError('Please enter the address.'); return; }
+      if (form.customer_type === 'other') {
+        if (!form.flat_no.trim() || !form.building.trim() || !form.street.trim()) {
+          setError('Please fill flat no., building and street / area.'); return;
+        }
+        if (form.pincode && !/^\d{6}$/.test(form.pincode)) { setError('Pincode should be 6 digits.'); return; }
+      }
     }
     createOrder({
       customer: {
@@ -106,7 +120,12 @@ export default function OrderEditor({ order, onClose }) {
           tower: form.customer_type === 'lodha' ? form.tower : null,
           wing: form.customer_type === 'lodha' ? form.wing : null,
           apartment: form.customer_type === 'lodha' ? form.apartment : null,
-          full_address: form.customer_type === 'other' ? form.full_address.trim() : null,
+          flat_no: form.customer_type === 'other' ? form.flat_no.trim() : null,
+          building: form.customer_type === 'other' ? form.building.trim() : null,
+          street: form.customer_type === 'other' ? form.street.trim() : null,
+          landmark: form.customer_type === 'other' ? form.landmark.trim() : null,
+          pincode: form.customer_type === 'other' ? form.pincode.trim() : null,
+          full_address: form.customer_type === 'other' ? composeAddress(form) : null,
         } : {}),
       },
       items: lines.map((l) => ({ menu_item_id: l.menu_item_id, quantity: l.quantity, note: l.note })),
@@ -123,6 +142,11 @@ export default function OrderEditor({ order, onClose }) {
         <button className="modal-close" aria-label="Close" onClick={onClose}><FaXmark /></button>
         <div className="modal-body">
           <h3>{isEdit ? `Edit order #${order.id}` : 'New order'}</h3>
+          {!isEdit && initialCustomer && (
+            <p className="muted small oe-cust">
+              for {initialCustomer.first_name} {initialCustomer.last_name} · {initialCustomer.phone}
+            </p>
+          )}
           {isEdit && (
             <p className="muted small oe-cust">
               {order.customer.first_name} {order.customer.last_name} · {order.customer.phone}
@@ -217,7 +241,30 @@ export default function OrderEditor({ order, onClose }) {
                 </label>
               </div>
             ) : (
-              <label>Address<textarea rows={2} value={form.full_address} onChange={set('full_address')} /></label>
+              <>
+                <div className="row2">
+                  <label>Flat / house no.
+                    <input value={form.flat_no} onChange={set('flat_no')} placeholder="e.g. 702" />
+                  </label>
+                  <label>Building / society
+                    <input value={form.building} onChange={set('building')} placeholder="e.g. Sea Breeze CHS" />
+                  </label>
+                </div>
+                <label>Street / area
+                  <input value={form.street} onChange={set('street')}
+                         placeholder="e.g. Senapati Bapat Marg, Lower Parel" />
+                </label>
+                <div className="row2">
+                  <label>Landmark <span className="opt">(optional)</span>
+                    <input value={form.landmark} onChange={set('landmark')} placeholder="e.g. near Blue Tokai" />
+                  </label>
+                  <label>Pincode <span className="opt">(optional)</span>
+                    <input inputMode="numeric" maxLength={6} value={form.pincode}
+                           onChange={(e) => { setError(''); setForm((f) => ({ ...f, pincode: e.target.value.replace(/\D/g, '') })); }}
+                           placeholder="e.g. 400013" />
+                  </label>
+                </div>
+              </>
             )}
           </>)}
 

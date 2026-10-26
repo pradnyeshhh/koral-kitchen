@@ -4,6 +4,8 @@ import {
   createCustomer, updateCustomerByPhone, deleteCustomerByPhone, TOWERS,
 } from '../../lib/store.js';
 import { FaMagnifyingGlass, FaChevronDown, FaPen, FaPlus, FaRegTrashCan, FaXmark } from 'react-icons/fa6';
+import { composeAddress, addressParts } from '../../lib/address.js';
+import OrderEditor from './OrderEditor.jsx';
 
 export default function Customers() {
   const [customers, setCustomers] = useState(listCustomers);
@@ -12,6 +14,7 @@ export default function Customers() {
   const [area, setArea] = useState(null); // null | 'lodha' | 'outside'
   const [openPhone, setOpenPhone] = useState(null);
   const [editing, setEditing] = useState(null); // null | 'new' | customer
+  const [ordering, setOrdering] = useState(null); // customer to create an order for
 
   useEffect(() => onChange(() => setCustomers(listCustomers())), []);
 
@@ -74,6 +77,8 @@ export default function Customers() {
                   {c.order_count} order{c.order_count === 1 ? '' : 's'} · ₹{c.total_spent}
                 </span>
                 <div className="cust-actions">
+                  <button className="cust-toggle cust-order" title="Create an order for this customer"
+                          onClick={() => setOrdering(c)}><FaPlus /> Order</button>
                   <button className="icon-btn" aria-label="Edit customer" title="Edit customer"
                           onClick={() => setEditing(c)}><FaPen /></button>
                   <button className="icon-btn danger-icon" aria-label="Delete customer" title="Delete customer"
@@ -91,6 +96,9 @@ export default function Customers() {
       </div>
       {editing && (
         <CustomerModal customer={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />
+      )}
+      {ordering && (
+        <OrderEditor customer={ordering} onClose={() => setOrdering(null)} />
       )}
     </div>
   );
@@ -138,7 +146,7 @@ function CustomerModal({ customer, onClose }) {
     tower: customer?.tower || TOWERS[0],
     wing: customer?.wing || 'A',
     apartment: customer?.apartment || '',
-    full_address: customer?.full_address || '',
+    ...addressParts(customer),
     jain_default: !!customer?.jain_default,
   }));
   const [error, setError] = useState('');
@@ -163,13 +171,24 @@ function CustomerModal({ customer, onClose }) {
     if (!f.first_name.trim()) { setError('Please enter a name.'); return; }
     const phone = f.phone.replace(/\D/g, '').slice(-10);
     if (!/^\d{10}$/.test(phone)) { setError('Please enter a 10-digit phone number.'); return; }
+    if (f.customer_type === 'other') {
+      if (!f.flat_no.trim() || !f.building.trim() || !f.street.trim()) {
+        setError('Please fill flat no., building and street / area.'); return;
+      }
+      if (f.pincode && !/^\d{6}$/.test(f.pincode)) { setError('Pincode should be 6 digits.'); return; }
+    }
     const data = {
       first_name: f.first_name.trim(), last_name: f.last_name.trim(), phone,
       customer_type: f.customer_type,
       tower: f.customer_type === 'lodha' ? f.tower : null,
       wing: f.customer_type === 'lodha' ? f.wing : null,
       apartment: f.customer_type === 'lodha' ? f.apartment : null,
-      full_address: f.customer_type === 'other' ? f.full_address.trim() : null,
+      flat_no: f.customer_type === 'other' ? f.flat_no.trim() : null,
+      building: f.customer_type === 'other' ? f.building.trim() : null,
+      street: f.customer_type === 'other' ? f.street.trim() : null,
+      landmark: f.customer_type === 'other' ? f.landmark.trim() : null,
+      pincode: f.customer_type === 'other' ? f.pincode.trim() : null,
+      full_address: f.customer_type === 'other' ? composeAddress(f) : null,
       jain_default: f.jain_default,
     };
     if (isEdit) {
@@ -214,7 +233,30 @@ function CustomerModal({ customer, onClose }) {
               </label>
             </div>
           ) : (
-            <label>Address<textarea rows={2} value={f.full_address} onChange={set('full_address')} /></label>
+            <>
+              <div className="row2">
+                <label>Flat / house no.
+                  <input value={f.flat_no} onChange={set('flat_no')} placeholder="e.g. 702" />
+                </label>
+                <label>Building / society
+                  <input value={f.building} onChange={set('building')} placeholder="e.g. Sea Breeze CHS" />
+                </label>
+              </div>
+              <label>Street / area
+                <input value={f.street} onChange={set('street')}
+                       placeholder="e.g. Senapati Bapat Marg, Lower Parel" />
+              </label>
+              <div className="row2">
+                <label>Landmark <span className="opt">(optional)</span>
+                  <input value={f.landmark} onChange={set('landmark')} placeholder="e.g. near Blue Tokai" />
+                </label>
+                <label>Pincode <span className="opt">(optional)</span>
+                  <input inputMode="numeric" maxLength={6} value={f.pincode}
+                         onChange={(e) => { setError(''); setF((s) => ({ ...s, pincode: e.target.value.replace(/\D/g, '') })); }}
+                         placeholder="e.g. 400013" />
+                </label>
+              </div>
+            </>
           )}
           <label className="check">
             <input type="checkbox" checked={f.jain_default} onChange={set('jain_default')} />

@@ -2,14 +2,8 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { listMenu, createOrder, findCustomerByPhone, TOWERS } from '../lib/store.js';
 import { useCart } from '../lib/cart.jsx';
+import { composeAddress } from '../lib/address.js';
 import Qty from '../components/Qty.jsx';
-
-function composeAddress(f) {
-  let a = `${f.flat_no.trim()}, ${f.building.trim()}, ${f.street.trim()}`;
-  if (f.landmark.trim()) a += `, ${f.landmark.trim()}`;
-  if (f.pincode.trim()) a += `, ${f.pincode.trim()}`;
-  return a;
-}
 
 export default function Checkout() {
   const cart = useCart();
