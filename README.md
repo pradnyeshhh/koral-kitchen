@@ -17,8 +17,8 @@ npm run dev
 Then open the printed URL (usually http://localhost:5173).
 
 - **Customer site:** `/`. Mobile-first; open it in a phone-sized window or device emulation.
-- **Admin dashboard:** `/#/admin`. Pipeline sidebar (Open → Accepted → Ready to deliver → Completed), order cards with WhatsApp chat buttons.
-- **Menu management:** `/#/admin/menu`. Add, edit, delete, availability toggle.
+- **Admin dashboard:** `/admin`. Pipeline sidebar (Open → Accepted → Ready to deliver → Completed), order cards with WhatsApp chat buttons.
+- **Menu management:** `/admin/menu`. Add, edit, delete, availability toggle.
 
 `npm run build` produces a static bundle in `dist/` you can host anywhere.
 
@@ -27,10 +27,10 @@ Then open the printed URL (usually http://localhost:5173).
 1. On `/`, add a few dishes, tap the cart bar, fill the one-step checkout (Lodha Park
    is the default customer type; tick **Jain preparation** and add a free-from note),
    and place the order.
-2. Open `/#/admin`: the order is in **Open** with the Jain flag and note on the card.
+2. Open `/admin`: the order is in **Open** with the Jain flag and note on the card.
    If both tabs are open, it appears without even refreshing.
 3. **Accept** it, then **Mark ready**, then **Mark completed**.
-4. On `/#/admin/menu`, toggle an item unavailable or edit its price, and the customer
+4. On `/admin/menu`, toggle an item unavailable or edit its price, and the customer
    menu updates immediately.
 
 ## What was chosen and why
@@ -46,7 +46,9 @@ Then open the printed URL (usually http://localhost:5173).
   checkout and the address fields prefill.
 - **No auth**, all pages reachable by URL. The admin routes are already separated
   under `/admin`, so a login guard can wrap that route group later.
-- **Hash routing** so the static build works on any host without rewrite rules.
+- **Clean URLs** (`/admin`, no `#`). The dev server handles this out of the box;
+  a static host needs an SPA fallback to `index.html` (a `public/_redirects` file
+  for Netlify is included; most hosts have an equivalent one-liner).
 - Dish photos are free-license placeholders from Wikimedia Commons
   (`public/images/ATTRIBUTION.md`), to be replaced with K's Kitchen's own photos.
 
