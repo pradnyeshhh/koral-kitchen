@@ -1,0 +1,30 @@
+# Image credits
+
+Dish photos are placeholders from Wikimedia Commons (free licenses; see each file page for the exact license and author).
+Replace them with K's Kitchen's own photos before going live.
+
+- `public/images/paneer-butter-masala.jpg` — [File:Paneer Butter Masala 3.jpg](https://commons.wikimedia.org/wiki/File:Paneer_Butter_Masala_3.jpg)
+- `public/images/dal-makhani.jpg` — [File:Dal Makhani along with Naan.jpg](https://commons.wikimedia.org/wiki/File:Dal_Makhani_along_with_Naan.jpg)
+- `public/images/chole-bhature.jpg` — [File:Chole Bhature 4.jpg](https://commons.wikimedia.org/wiki/File:Chole_Bhature_4.jpg)
+- `public/images/veg-biryani.jpg` — [File:Vegetable Biryani IMG 001.jpg](https://commons.wikimedia.org/wiki/File:Vegetable_Biryani_IMG_001.jpg)
+- `public/images/palak-paneer.jpg` — [File:Palak Paneer (Cottage cheese in spinach gravy).jpg](https://commons.wikimedia.org/wiki/File:Palak_Paneer_(Cottage_cheese_in_spinach_gravy).jpg)
+- `public/images/dhokla.jpg` — [File:Dhokla Home Made,Duliajan,Assam.jpg](https://commons.wikimedia.org/wiki/File:Dhokla_Home_Made,Duliajan,Assam.jpg)
+- `public/images/thepla.jpg` — [File:Thepla main.jpg](https://commons.wikimedia.org/wiki/File:Thepla_main.jpg)
+- `public/images/undhiyu.jpg` — [File:Undhiyu.jpg](https://commons.wikimedia.org/wiki/File:Undhiyu.jpg)
+- `public/images/khandvi.jpg` — [File:Khandvi (10497367994).jpg](https://commons.wikimedia.org/wiki/File:Khandvi_(10497367994).jpg)
+- `public/images/gujarati-thali.jpg` — [File:Gujarati Thali 1.jpg](https://commons.wikimedia.org/wiki/File:Gujarati_Thali_1.jpg)
+- `public/images/avocado-maki.jpg` — [File:Kappamaki - Vegan maki rolls (4604404667).jpg](https://commons.wikimedia.org/wiki/File:Kappamaki_-_Vegan_maki_rolls_(4604404667).jpg)
+- `public/images/veg-ramen.jpg` — [File:Vegetarian ramen @ Yatta ! Ramen @ Annecy-le-Vieux (49020524758).jpg](https://commons.wikimedia.org/wiki/File:Vegetarian_ramen_@_Yatta_!_Ramen_@_Annecy-le-Vieux_(49020524758).jpg)
+- `public/images/veg-tempura.jpg` — [File:Iwamizawa Komoro-buckwheat-noodles-eating-shop vegetables-Tempra-bowl.JPG](https://commons.wikimedia.org/wiki/File:Iwamizawa_Komoro-buckwheat-noodles-eating-shop_vegetables-Tempra-bowl.JPG)
+- `public/images/edamame.jpg` — [File:Edamame on a bamboo bowl by yomi955.jpg](https://commons.wikimedia.org/wiki/File:Edamame_on_a_bamboo_bowl_by_yomi955.jpg)
+- `public/images/onigiri.jpg` — [File:Japanese rice balls (onigiri).jpg](https://commons.wikimedia.org/wiki/File:Japanese_rice_balls_(onigiri).jpg)
+- `public/images/margherita.jpg` — [File:Pizza-napoletana.jpg](https://commons.wikimedia.org/wiki/File:Pizza-napoletana.jpg)
+- `public/images/arrabbiata.jpg` — [File:Penne Arrabbiata.jpg](https://commons.wikimedia.org/wiki/File:Penne_Arrabbiata.jpg)
+- `public/images/risotto.jpg` — [File:Mushroom and Leek Risotto (49535206656).jpg](https://commons.wikimedia.org/wiki/File:Mushroom_and_Leek_Risotto_(49535206656).jpg)
+- `public/images/bruschetta.jpg` — [File:Tomato and basil bruschetta (4925749658).jpg](https://commons.wikimedia.org/wiki/File:Tomato_and_basil_bruschetta_(4925749658).jpg)
+- `public/images/lasagna.jpg` — [File:Eggplant Lasagna (Vegitarian) (2 of 6).jpg](https://commons.wikimedia.org/wiki/File:Eggplant_Lasagna_(Vegitarian)_(2_of_6).jpg)
+- `public/images/gulab-jamun.jpg` — [File:Two Gulab Jamun in a plate 01.jpg](https://commons.wikimedia.org/wiki/File:Two_Gulab_Jamun_in_a_plate_01.jpg)
+- `public/images/rasmalai.jpg` — [File:Ras Malai 2.JPG](https://commons.wikimedia.org/wiki/File:Ras_Malai_2.JPG)
+- `public/images/brownie.jpg` — [File:Chocolate brownies without table.jpg](https://commons.wikimedia.org/wiki/File:Chocolate_brownies_without_table.jpg)
+- `public/images/tiramisu.jpg` — [File:Classic Italian Tiramisu-3 (29989504485).jpg](https://commons.wikimedia.org/wiki/File:Classic_Italian_Tiramisu-3_(29989504485).jpg)
+- `public/images/kulfi.jpg` — [File:Kulfi de pistatxo.jpg](https://commons.wikimedia.org/wiki/File:Kulfi_de_pistatxo.jpg)
