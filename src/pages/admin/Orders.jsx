@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { listOrders, setOrderStatus, onChange, formatAddress } from '../../lib/store.js';
 import { STAGES } from './AdminLayout.jsx';
-import { FaWhatsapp } from 'react-icons/fa6';
 
 const NEXT = { accepted: ['ready', 'Mark ready'], ready: ['completed', 'Mark completed'] };
 
@@ -73,7 +72,6 @@ function OrderCard({ order: o }) {
   const c = o.customer;
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState('');
-  const wa = `https://wa.me/91${c.phone}?text=${encodeURIComponent(`Hi ${c.first_name}, about your K's Kitchen order #${o.id}: `)}`;
   const next = NEXT[o.status];
 
   return (
@@ -91,10 +89,7 @@ function OrderCard({ order: o }) {
       <div className="order-addr">
         {o.fulfilment === 'pickup' ? 'Self pickup from the kitchen' : formatAddress(c)}
       </div>
-      <div className="order-phone">
-        <span>{c.phone}</span>
-        <a className="wa-btn" href={wa} target="_blank" rel="noreferrer"><FaWhatsapp /> WhatsApp</a>
-      </div>
+      <div className="order-phone">{c.phone}</div>
 
       {(o.slot || o.fulfilment === 'pickup' || o.jain || o.free_from_note || o.reject_reason) && (
         <div className="order-flags">

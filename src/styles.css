@@ -359,15 +359,7 @@ a { color: var(--primary); }
 }
 .order-total { font-weight: 750; font-size: 16.5px; font-variant-numeric: tabular-nums; }
 .order-addr { font-size: 13.5px; color: #434e47; }
-.order-phone {
-  display: flex; align-items: center; justify-content: space-between;
-  font-size: 13.5px; font-variant-numeric: tabular-nums;
-}
-.wa-btn {
-  background: #22b858; color: #fff; text-decoration: none; font-weight: 700; font-size: 12.5px;
-  padding: 7px 14px; border-radius: 10px;
-  box-shadow: 0 4px 10px -4px rgba(34, 184, 88, .6);
-}
+.order-phone { font-size: 13.5px; font-variant-numeric: tabular-nums; }
 .order-flags { display: flex; flex-wrap: wrap; gap: 7px; }
 .flag { font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 8px; }
 .flag.jain { background: var(--saffron-soft); color: #0f5c33; border: 1px solid #bfdcc9; letter-spacing: .6px; }
@@ -500,7 +492,6 @@ a { color: var(--primary); }
   .add-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
   .primary:hover { background: var(--primary-bright); }
   .danger:hover { background: var(--red-soft); }
-  .wa-btn:hover { filter: brightness(1.06); }
   .side-link:hover { color: #fff; }
   .mi-actions button:hover { background: var(--panel); }
   .site-footer a:hover { border-color: #c3cfc6; }
@@ -566,7 +557,6 @@ a { color: var(--primary); }
 .item-note { display: block; font-size: 12px; font-weight: 600; color: #0f5c33; }
 
 /* icon alignment + form field heading */
-.wa-btn { display: inline-flex; align-items: center; gap: 6px; }
 .site-footer a { display: inline-flex; align-items: center; gap: 7px; }
 .modal-close svg { display: block; }
 .field { margin-bottom: 12px; }
