@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { listMenu, onChange } from '../lib/store.js';
 import { CATEGORIES } from '../data/seed.js';
 import { useCart } from '../lib/cart.jsx';
@@ -41,6 +41,7 @@ export default function Menu() {
   return (
     <div className="page customer">
       <header className="brand-header">
+        <Link to="/" className="admin-link">Admin ↗</Link>
         <div className="brand-row">
           <div className="brand-mono">K</div>
           <div>
