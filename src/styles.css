@@ -668,3 +668,7 @@ a { color: var(--primary); }
   border: 1px solid var(--line); border-radius: 10px; padding: 8px 16px;
   background: #fff; font-size: 13px; font-weight: 650; color: var(--primary);
 }
+
+/* slots that have passed for the day */
+.opt-chip:disabled { opacity: .4; cursor: default; }
+.opt-chip:disabled:active { transform: none; }

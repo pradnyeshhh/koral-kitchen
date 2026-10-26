@@ -264,7 +264,19 @@ export function formatAddress(c) {
 }
 
 export const TOWERS = ['Park Side', 'Allura', 'Marquees', 'Trump Tower', 'Kiara', 'Adrina'];
-export const SLOTS = ['ASAP', 'Lunch (12-2 pm)', 'Evening (5-7 pm)', 'Dinner (7-9 pm)'];
+export const SLOT_DEFS = [
+  { label: 'ASAP', end: null },          // always available
+  { label: 'Lunch (12-2 pm)', end: 14 }, // disabled once its window has passed
+  { label: 'Evening (5-7 pm)', end: 19 },
+  { label: 'Dinner (7-9 pm)', end: 21 },
+];
+export const SLOTS = SLOT_DEFS.map((s) => s.label);
+
+export function isSlotPast(label, now = new Date()) {
+  const def = SLOT_DEFS.find((s) => s.label === label);
+  if (!def || def.end == null) return false;
+  return now.getHours() + now.getMinutes() / 60 >= def.end;
+}
 
 export const DEFAULT_CATEGORY_OPTIONS = {
   'North Indian': ['Less spicy', 'Extra spicy', 'No onion', 'No garlic', 'Less oil', 'No coriander'],
