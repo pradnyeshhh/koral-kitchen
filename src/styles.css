@@ -730,3 +730,9 @@ a { color: var(--primary); }
 .po-status.completed { color: var(--muted); }
 .po-status.rejected { color: var(--red); }
 .po-total { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* customer actions + customisation details in history */
+.cust-actions { display: flex; align-items: center; gap: 6px; }
+.icon-btn.danger-icon:hover { color: var(--red); background: var(--red-soft); }
+.po-custom { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.po-custom .flag { font-size: 10.5px; padding: 3px 8px; }

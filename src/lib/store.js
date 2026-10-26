@@ -200,14 +200,62 @@ function upsertCustomer(db, c) {
   return customer;
 }
 
+// ---- customer management ----
+export function createCustomer(data) {
+  const db = load();
+  const phone = (data.phone || '').replace(/\D/g, '').slice(-10);
+  const hidden = db.settings.hidden_customers || [];
+  const exists = db.customers.some((c) => c.phone === phone)
+    || getDemoData().customers.some((c) => c.phone === phone && !hidden.includes(phone));
+  if (exists) return { error: 'A customer with this phone number already exists.' };
+  const customer = { id: nextId(db), ...data, phone, created_at: new Date().toISOString() };
+  db.customers.push(customer);
+  save(db);
+  return { customer };
+}
+
+export function updateCustomerByPhone(phone, patch) {
+  const db = load();
+  const real = db.customers.filter((c) => c.phone === phone);
+  if (real.length) {
+    real.forEach((c) => Object.assign(c, patch));
+    save(db);
+    return;
+  }
+  // demo customers persist edits as a real override row sharing their phone
+  const demo = getDemoData().customers.find((c) => c.phone === phone);
+  if (demo) {
+    db.customers.push({
+      ...demo, ...patch, id: nextId(db),
+      replaces_phone: phone, created_at: new Date().toISOString(),
+    });
+    save(db);
+  }
+}
+
+export function deleteCustomerByPhone(phone) {
+  const db = load();
+  const ids = db.customers.filter((c) => c.phone === phone).map((c) => c.id);
+  db.customers = db.customers.filter((c) => c.phone !== phone);
+  const orderIds = db.orders.filter((o) => ids.includes(o.customer_id)).map((o) => o.id);
+  db.orders = db.orders.filter((o) => !ids.includes(o.customer_id));
+  db.order_items = db.order_items.filter((oi) => !orderIds.includes(oi.order_id));
+  if (getDemoData().customers.some((c) => c.phone === phone)) {
+    db.settings.hidden_customers = [...(db.settings.hidden_customers || []), phone];
+  }
+  save(db);
+}
+
 // ---- customers directory ----
 // Real and demo customers merged, deduped by phone (real data wins), with
 // order stats gathered across both pools.
 export function listCustomers() {
   const db = load();
   const demo = getDemoData();
+  const hidden = new Set(db.settings.hidden_customers || []);
+  db.customers.forEach((c) => { if (c.replaces_phone) hidden.add(c.replaces_phone); });
   const byPhone = new Map();
-  [...demo.customers, ...db.customers].forEach((c) => {
+  [...demo.customers.filter((c) => !hidden.has(c.phone)), ...db.customers].forEach((c) => {
     const entry = byPhone.get(c.phone) || { ids: [], rep: null };
     entry.ids.push(c.id);
     entry.rep = c; // later wins, so real customers override demo ones
